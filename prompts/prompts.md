@@ -153,6 +153,9 @@ El sistema debe almacenar auditoria de todas las operaciones que se realicen inc
 
 
 
-2. **Segundo promt**: 
+2. **Segundo prompt**: 
+
+Me parece que esta muy bien pero no estan los controladores
 
 
+3. **Segundo prompt**: 
