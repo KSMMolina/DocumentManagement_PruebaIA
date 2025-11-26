@@ -1,13 +1,14 @@
+using DocumentManagementPruebaIA.Application.Interfaces;
 using DocumentManagementPruebaIA.Application.UseCases.Documents;
 using DocumentManagementPruebaIA.Application.UseCases.Folders;
 using DocumentManagementPruebaIA.Application.UseCases.Permissions;
 using DocumentManagementPruebaIA.Infrastructure.Persistence;
 using DocumentManagementPruebaIA.Infrastructure.Persistence.Repositories;
-using DocumentManagementPruebaIA.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,6 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
 app.Run();
