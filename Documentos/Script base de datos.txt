@@ -1,0 +1,176 @@
+-- Módulo: Gestión documental (DomoNow)
+-- Base de datos: PostgreSQL
+
+-- Extensión para generación de UUID
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- =========================
+-- Catálogos
+-- =========================
+
+CREATE TABLE roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code TEXT NOT NULL UNIQUE,                 -- Ej: ADMINISTRADOR, RESIDENTE, PORTERO
+    name TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE permission_types (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code TEXT NOT NULL UNIQUE,                 -- VIEW, DOWNLOAD
+    name TEXT NOT NULL
+);
+
+CREATE TABLE action_types (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code TEXT NOT NULL UNIQUE,                 -- CREATE_FOLDER, UPDATE_FOLDER, DELETE_FOLDER, CREATE_DOCUMENT, UPDATE_DOCUMENT, DELETE_DOCUMENT, DOWNLOAD_DOCUMENT, ASSIGN_PERMISSION, REVOKE_PERMISSION
+    name TEXT NOT NULL
+);
+
+-- =========================
+-- Entidades núcleo
+-- =========================
+
+CREATE TABLE properties (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Rol asignado a usuario dentro de una propiedad
+CREATE TABLE user_property_roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    property_id UUID NOT NULL,
+    role_id UUID NOT NULL,
+    assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_upr_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_upr_property FOREIGN KEY (property_id) REFERENCES properties (id),
+    CONSTRAINT fk_upr_role FOREIGN KEY (role_id) REFERENCES roles (id),
+    CONSTRAINT uq_upr UNIQUE (user_id, property_id, role_id)
+);
+
+-- =========================
+-- Jerarquía de carpetas
+-- =========================
+
+CREATE TABLE folders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    property_id UUID NOT NULL,
+    parent_folder_id UUID NULL,
+    folder_name TEXT NOT NULL,
+    description TEXT NULL,
+    depth SMALLINT NOT NULL,                -- 1..3
+    child_slot SMALLINT NOT NULL,           -- 1 ó 2 (posición entre hermanas)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_folder_property FOREIGN KEY (property_id) REFERENCES properties (id),
+    CONSTRAINT fk_folder_parent FOREIGN KEY (parent_folder_id) REFERENCES folders (id),
+    CONSTRAINT chk_folder_depth CHECK (depth BETWEEN 1 AND 3),
+    -- Garantiza máximo 2 hijas por carpeta y también máximo 2 raíces por propiedad (parent_folder_id NULL)
+    CONSTRAINT chk_child_slot CHECK (child_slot IN (1, 2)),
+    CONSTRAINT uq_folder_slot UNIQUE (property_id, parent_folder_id, child_slot),
+    -- Unicidad de nombre dentro del mismo padre en la misma propiedad
+    CONSTRAINT uq_folder_name_per_parent UNIQUE (property_id, parent_folder_id, folder_name),
+    -- Profundidad vs raíz: si depth=1 entonces parent_folder_id es NULL, si depth>1 entonces NO es NULL
+    CONSTRAINT chk_root_depth_consistency CHECK (
+        (depth = 1 AND parent_folder_id IS NULL) OR
+        (depth > 1 AND parent_folder_id IS NOT NULL)
+    )
+    -- DOMINIO: Validar que depth = (SELECT depth FROM parent) + 1 para hijos.
+    -- DOMINIO: Validar que property_id del hijo = property_id del padre.
+);
+
+CREATE INDEX idx_folders_property ON folders(property_id);
+CREATE INDEX idx_folders_parent ON folders(parent_folder_id);
+CREATE INDEX idx_folders_name_search ON folders(folder_name);
+
+-- =========================
+-- Documentos
+-- =========================
+
+CREATE TABLE documents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    folder_id UUID NOT NULL,
+    file_slot SMALLINT NOT NULL,              -- 1..5
+    document_name TEXT NOT NULL,
+    description TEXT NULL,
+    file_size_bytes BIGINT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    -- (Opcionalmente podrían añadirse mime_type, hash, storage_path en futuras iteraciones)
+    CONSTRAINT fk_document_folder FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE,
+    CONSTRAINT chk_file_slot CHECK (file_slot BETWEEN 1 AND 5),
+    CONSTRAINT chk_file_size CHECK (file_size_bytes <= 50 * 1024 * 1024),
+    CONSTRAINT uq_document_slot UNIQUE (folder_id, file_slot),
+    CONSTRAINT uq_document_name_per_folder UNIQUE (folder_id, document_name)
+);
+
+CREATE INDEX idx_documents_folder ON documents(folder_id);
+CREATE INDEX idx_documents_name_search ON documents(document_name);
+
+-- =========================
+-- Permisos por carpeta y rol
+-- =========================
+
+CREATE TABLE folder_role_permissions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    folder_id UUID NOT NULL,
+    role_id UUID NOT NULL,
+    permission_type_id UUID NOT NULL,
+    granted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_frp_folder FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE,
+    CONSTRAINT fk_frp_role FOREIGN KEY (role_id) REFERENCES roles (id),
+    CONSTRAINT fk_frp_permission FOREIGN KEY (permission_type_id) REFERENCES permission_types (id),
+    CONSTRAINT uq_frp UNIQUE (folder_id, role_id, permission_type_id)
+    -- DOMINIO: El permiso del rol ADMINISTRADOR no se puede revocar.
+);
+
+CREATE INDEX idx_frp_folder ON folder_role_permissions(folder_id);
+CREATE INDEX idx_frp_role ON folder_role_permissions(role_id);
+
+-- =========================
+-- Auditoría
+-- =========================
+
+CREATE TABLE audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id UUID NOT NULL,
+    role_id UUID NULL,              -- Rol efectivo en el momento de la acción (si aplica)
+    property_id UUID NULL,
+    action_type_id UUID NOT NULL,
+    folder_id UUID NULL,
+    document_id UUID NULL,
+    detail TEXT NULL,               -- Texto adicional (ej: nombre anterior/nuevo)
+    CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_audit_role FOREIGN KEY (role_id) REFERENCES roles (id),
+    CONSTRAINT fk_audit_property FOREIGN KEY (property_id) REFERENCES properties (id),
+    CONSTRAINT fk_audit_action FOREIGN KEY (action_type_id) REFERENCES action_types (id),
+    CONSTRAINT fk_audit_folder FOREIGN KEY (folder_id) REFERENCES folders (id),
+    CONSTRAINT fk_audit_document FOREIGN KEY (document_id) REFERENCES documents (id)
+    -- DOMINIO: Validar coherencia de referencias según action_type (ej: DOWNLOAD_DOCUMENT debe tener document_id).
+);
+
+CREATE INDEX idx_audit_user ON audit_logs(user_id);
+CREATE INDEX idx_audit_action ON audit_logs(action_type_id);
+CREATE INDEX idx_audit_folder ON audit_logs(folder_id);
+CREATE INDEX idx_audit_document ON audit_logs(document_id);
+CREATE INDEX idx_audit_property ON audit_logs(property_id);
+
+-- =========================
+-- Comentarios globales de reglas delegadas a dominio
+-- =========================
+-- 1. depth hijo = depth padre + 1.
+-- 2. property_id de la carpeta hija debe coincidir con la del padre.
+-- 3. No permitir la eliminación de permisos del rol ADMINISTRADOR.
+-- 4. Coherencia de acción vs referencias (ej. eliminación de documento requiere document_id).
+-- 5. Validación de combinaciones duplicadas semánticas más allá de las UNIQUE físicas.

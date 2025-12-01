@@ -1,0 +1,81 @@
+Actúa como un arquitecto de dominio experto en DDD y Clean Architecture.
+
+Quiero que DISEÑES el MODELO DE DOMINIO para el módulo "Gestión documental" de DomoNow, basándote en la siguiente historia de usuario y reglas de negocio.
+
+Historia de usuario / módulo (Gestión documental):
+
+ADMINISTRADOR
+- El sistema debe permitir gestionar las carpetas relacionadas a una propiedad.
+- El sistema debe permitir crear, editar y eliminar carpetas y subcarpetas.
+- El sistema debe permitir agregar archivos a las carpetas, únicamente 5 archivos por carpeta.
+- El sistema debe restringir la creación de carpetas y subcarpetas hasta un máximo de 3 en profundidad y 2 en el mismo nivel, es decir, una carpeta solo puede tener 2 subcarpetas y esas subcarpetas pueden tener 2 subcarpetas más.
+- El sistema debe almacenar nombre del archivo, descripción del archivo, fecha de creación.
+- El sistema debe permitir la actualización de los archivos (descripción y nombre).
+- El sistema debe permitir filtrar por nombre de carpetas y/o por nombre de archivo.
+- El sistema debe restringir y validar en la subida del archivo que los archivos pesen un máximo de 50 Mb.
+- El sistema debe permitir gestionar permisos por árbol de archivos.
+- El permiso de ADMINISTRADOR no puede ser removido; solo se pueden añadir o remover permisos para los otros tipos de usuarios.
+- Solo se puede asignar permisos para VER y DESCARGAR.
+
+RESIDENTE
+- El sistema debe permitir ver y descargar, únicamente si tiene permisos.
+
+AUDITORÍA
+- El sistema debe almacenar auditoría de todas las operaciones que se realicen, incluyendo las descargas de los archivos.
+
+Requisitos del diseño de dominio:
+
+- El diseño debe ser completamente independiente de infraestructura (nada de EF Core, nada de atributos de persistencia, nada de Postgres en el dominio).
+- Usa términos y conceptos propios del dominio de gestión documental en propiedad horizontal.
+
+Incluye en la respuesta, de forma estructurada:
+
+1. Entidades de dominio
+   - Lista de entidades (por ejemplo: Property, Folder, Document, Role, FolderPermission, AuditLogEntry, etc.).
+   - Descripción clara de la responsabilidad de cada entidad.
+   - Qué atributos clave tiene cada entidad (de forma conceptual, sin tipos de base de datos).
+
+2. Value Objects
+   - Lista de Value Objects que apoyen las reglas de negocio, por ejemplo:
+     - FolderName, DocumentName, FileDescription, FileSize, FilePath, Depth, PermissionType, RoleCode, etc.
+   - Para cada VO, explica:
+     - regla de igualdad por valor,
+     - invariantes (por ejemplo: tamaño máximo 50Mb, longitud máxima de texto, formatos permitidos),
+     - comportamiento relevante si aplica.
+
+3. Agregados y límites de agregados
+   - Define cuál es el agregado raíz principal (Folder para el árbol de carpetas).
+   - Explica qué entidades pertenecen al agregado Folder (por ejemplo, Document, FolderPermission).
+   - Explica la relación con Property, Role y User (referencias por Id, otros agregados, etc.).
+   - Justifica brevemente las decisiones de agregación (por consistencia e invariantes).
+
+4. Eventos de dominio sugeridos
+   - Lista de eventos de dominio como:
+     - FolderCreated, FolderRenamed, FolderDeleted,
+     - DocumentUploaded, DocumentUpdated, DocumentDeleted, DocumentDownloaded,
+     - FolderPermissionsAssigned, FolderPermissionsRevoked.
+   - Explica qué disparan, qué información transportan y qué invariantes protegen.
+
+5. Reglas de negocio e invariantes
+   - Explica claramente cómo el dominio garantiza:
+     - profundidad máxima de 3 niveles,
+     - máximo 2 subcarpetas por carpeta,
+     - máximo 5 documentos por carpeta,
+     - tamaño máximo de archivo de 50 Mb,
+     - permisos por rol (VIEW/DOWNLOAD),
+     - imposibilidad de remover permisos del rol ADMINISTRADOR.
+
+6. Estados y transiciones
+   - Describe estados relevantes (por ejemplo: carpeta activa/eliminada, documento activo/eliminado).
+   - Explica las transiciones entre estados y qué métodos del dominio las gatillan.
+
+7. Riesgos y casos límite importantes
+   - Enumera posibles edge cases:
+     - intentos de crear más de 2 subcarpetas,
+     - intentos de subir más de 5 documentos a una carpeta,
+     - intentos de subir archivos muy grandes,
+     - intentos de remover permisos del rol ADMINISTRADOR,
+     - cambios de nombre que generen conflictos de nombres en el mismo nivel de carpeta.
+   - Explica cómo el modelo de dominio debe reaccionar (errores de dominio, excepciones, etc.).
+
+NO generes código C# en este prompt. Solo el diseño textual y conceptual del modelo de dominio siguiendo DDD.

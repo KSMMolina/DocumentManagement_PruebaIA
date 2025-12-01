@@ -1,0 +1,54 @@
+Actúa como un desarrollador backend senior en C#/.NET 9, aplicando Clean Architecture + DDD + SOLID.
+
+Quiero que GENERES la LÓGICA de los CASOS DE USO principales del módulo "Gestión documental" de DomoNow, en la capa Application.
+
+Contexto de arquitectura:
+- Proyectos: DocManagApi_pruebaIa.Domain, Application, Infrastructure, Api.
+- Ya existe un modelo de dominio diseñado (entidades Folder, Document, FolderPermission, etc.).
+- La base de datos es PostgreSQL y se accede vía EF Core en la capa Infrastructure.
+- La capa Application expone casos de uso mediante MediatR (Commands y Queries).
+
+Casos de uso a cubrir (como mínimo):
+
+1. Crear carpeta.
+2. Actualizar carpeta (nombre y descripción).
+3. Eliminar carpeta (considerando que puede tener subcarpetas/documentos).
+4. Crear subcarpeta respetando:
+   - profundidad máxima 3,
+   - máximo 2 subcarpetas por carpeta.
+5. Subir documento a una carpeta respetando:
+   - máximo 5 documentos por carpeta,
+   - tamaño máximo 50 Mb,
+   - registro de fecha de creación.
+6. Actualizar documento (nombre y descripción).
+7. Eliminar documento.
+8. Asignar permisos a un rol sobre una carpeta (VIEW/DOWNLOAD).
+9. Revocar permisos a un rol sobre una carpeta, garantizando:
+   - nunca se pueden revocar permisos del rol ADMINISTRADOR.
+10. Descargar documento:
+   - Validando que el usuario tenga permiso.
+   - Registrando auditoría de descarga.
+
+Requisitos de la respuesta:
+
+1. Define para cada caso de uso:
+   - Command o Query (nombre, campos de entrada).
+   - Handler correspondiente (por ejemplo: CreateFolderCommandHandler).
+   - Interfaces de repositorio que necesita (por ejemplo: IFolderRepository, IDocumentRepository, IAuditLogRepository).
+   - DTOs de entrada/salida si aplica.
+
+2. Especifica:
+   - Validaciones que se hacen en Application (por ejemplo: que los IDs existan, que la carpeta esté activa).
+   - Validaciones que se delegan al dominio (por ejemplo: agregar subcarpeta, agregar documento, validar permisos de ADMIN).
+
+3. Define el flujo paso a paso de uno o dos casos de uso clave (por ejemplo: crear carpeta y subir documento), indicando:
+   - cómo se construyen las entidades/VO del dominio,
+   - cómo se llaman los métodos del agregado raíz,
+   - cómo se dispara la auditoría.
+
+4. Usa firmas de código en C# para ilustrar, pero sin escribir toda la implementación interna:
+   - Clases Command/Query.
+   - Handlers.
+   - Interfaces de repositorio.
+
+No generes DbContext ni configuraciones de EF Core en este prompt; concéntrate en la capa Application y su interacción con la capa Domain vía interfaces.

@@ -1,0 +1,86 @@
+Actúa como un arquitecto de software senior experto en PostgreSQL, normalización hasta 3FN y diseño de modelos alineados con DDD.
+
+Quiero que DISEÑES y GENERES el SCRIPT SQL de la base de datos para el módulo de "Gestión documental" de un sistema llamado DomoNow.
+
+IMPORTANTE:
+- Motor de base de datos: PostgreSQL (versión reciente).
+- No uses TRIGGERS ni funciones almacenadas.
+- Usa solo: tablas, PRIMARY KEY, FOREIGN KEY, índices, restricciones UNIQUE, CHECK y tipos de datos adecuados de PostgreSQL.
+- Aplica normalización hasta TERCERA FORMA NORMAL (3FN).
+- Usa tipos UUID para identificadores, TEXT/VARCHAR para cadenas, TIMESTAMPTZ para fechas, BIGINT para tamaños de archivo.
+- Usa nombres de tablas y columnas en snake_case.
+- No generes datos de prueba, solo estructura.
+- No generes código C#, solo SQL.
+
+Contexto funcional (HU – Gestión documental):
+
+ADMINISTRADOR
+- El sistema debe permitir gestionar las carpetas relacionadas a una propiedad.
+- El sistema debe permitir crear, editar y eliminar carpetas y subcarpetas.
+- El sistema debe permitir agregar archivos a las carpetas, únicamente 5 archivos por carpeta.
+- El sistema debe restringir la creación de carpetas y subcarpetas hasta un máximo de 3 en profundidad y 2 en el mismo nivel, es decir, una carpeta solo puede tener 2 subcarpetas y esas subcarpetas pueden tener 2 subcarpetas más.
+- El sistema debe almacenar nombre del archivo, descripción del archivo, fecha de creación.
+- El sistema debe permitir la actualización de los archivos (descripción y nombre).
+- El sistema debe permitir filtrar por nombre de carpetas y/o por nombre de archivo.
+- El sistema debe restringir y validar en la subida del archivo que los archivos pesen un máximo de 50 Mb.
+- El sistema debe permitir gestionar permisos por árbol de archivos.
+- El permiso de ADMINISTRADOR no puede ser removido; solo se pueden añadir o remover los permisos para los otros tipos de usuarios.
+- Solo se puede asignar permisos para VER y DESCARGAR.
+
+RESIDENTE
+- El sistema debe permitir ver y descargar, únicamente si tiene permisos.
+
+AUDITORÍA
+- El sistema debe almacenar auditoría de todas las operaciones que se realicen, incluyendo las descargas de los archivos.
+
+Requisitos de modelado:
+
+1. Entidades mínimas esperadas:
+   - Propiedades horizontales.
+   - Usuarios.
+   - Roles reales de propiedad horizontal (ADMINISTRADOR, RESIDENTE, PORTERO).
+   - Carpetas (con jerarquía de carpetas y subcarpetas).
+   - Archivos/documentos.
+   - Permisos por carpeta y rol (VIEW / DOWNLOAD).
+   - Auditoría de operaciones.
+
+2. Normalización:
+   - Separa catálogos como roles, tipos de permiso y tipos de acción de auditoría.
+   - Evita redundancias (por ejemplo, textos de acciones en cada registro de auditoría).
+   - No uses columnas multivaluadas ni campos que rompan 3FN.
+
+3. Reglas de negocio que debes reflejar en la base de datos SIN TRIGGERS:
+   - Profundidad máxima de carpeta:
+     - Define una columna depth con CHECK (depth BETWEEN 1 AND 3).
+     - Si alguna regla de jerarquía (por ejemplo, validar que el hijo tiene depth = padre + 1) no se puede garantizar sin triggers, documenta en comentarios SQL que se manejará en la capa de dominio.
+   - Máximo 2 subcarpetas por carpeta:
+     - Usa una columna child_slot con valores 1 o 2 y CHECK (child_slot IN (1, 2)).
+     - Usa restricciones UNIQUE sobre el padre + child_slot para limitar a 2 hijas por carpeta.
+     - Si necesitas columnas auxiliares (por ejemplo, parent_scope_id) para soportar esto, defínelas de forma explícita.
+   - Máximo 5 archivos por carpeta:
+     - Usa una columna file_slot con valores 1–5 y CHECK (file_slot BETWEEN 1 AND 5).
+     - Usa UNIQUE (folder_id, file_slot) para garantizar el máximo número de archivos.
+   - Tamaño máximo de archivo:
+     - Usa CHECK (file_size_bytes <= 50 * 1024 * 1024).
+
+4. Permisos:
+   - Tabla de roles: debe permitir al menos ADMINISTRADOR, RESIDENTE, PORTERO (no es obligatorio insertar los datos aquí, pero el modelo debe soportarlos).
+   - Tabla de tipos de permiso: VIEW, DOWNLOAD.
+   - Tabla para relacionar carpeta, rol y tipo de permiso (por ejemplo, folder_role_permissions).
+   - La regla “el permiso de administrador no puede ser removido” NO debe implementarse con triggers: documenta en un comentario SQL que esa validación se hará en dominio/aplicación.
+
+5. Auditoría:
+   - Tabla audit_logs que registre:
+     - usuario, rol, propiedad,
+     - tipo de acción (crear/editar/eliminar carpeta, crear/editar/eliminar documento, descarga, asignación/revocación de permisos),
+     - referencias opcionales a carpeta y documento,
+     - detalles adicionales como texto.
+
+Formato de salida OBLIGATORIO:
+1. Listado de tablas con breve descripción.
+2. Descripción de relaciones entre tablas.
+3. Listado de reglas de negocio que se implementan con CHECK/UNIQUE/PK/FK y cuáles se dejan explícitamente para la capa de dominio (en comentarios SQL).
+4. Script SQL completo para PostgreSQL (CREATE TABLE, índices, constraints).
+5. Diagrama relacional en texto (usando notación 1─* / *─1).
+
+No generes ningún código C#, solo la parte de base de datos en PostgreSQL.

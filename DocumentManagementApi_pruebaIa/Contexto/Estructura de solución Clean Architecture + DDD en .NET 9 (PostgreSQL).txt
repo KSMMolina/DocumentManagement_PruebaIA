@@ -1,0 +1,52 @@
+Actúa como un arquitecto de software senior especializado en C#, .NET 9, EF Core y Clean Architecture con DDD.
+
+Quiero que DEFINAS la ESTRUCTURA INICIAL de un backend para el módulo "Gestión documental" de DomoNow, siguiendo Clean Architecture + DDD.
+
+IMPORTANTE:
+- NO uses ni menciones “arquitectura hexagonal”.
+- La arquitectura debe ser Clean Architecture con capas: Domain, Application, Infrastructure, Api.
+- La base de datos es PostgreSQL usando EF Core con el provider Npgsql.
+- No uses triggers en la base de datos (esas reglas se manejan en dominio + aplicación).
+- Enfócate en el módulo de Gestión documental, no en todo DomoNow.
+
+Historia / módulo de negocio: (misma que en los prompts anteriores de Gestión documental: administrador, residente, permisos, auditoría, límites de profundidad, cantidad de carpetas y documentos, tamaño máximo 50Mb, etc.).
+
+Requisitos de la solución:
+
+1. Proyectos
+   - DocManagApi_pruebaIa.Domain
+   - DocManagApi_pruebaIa.Application
+   - DocManagApi_pruebaIa.Infrastructure
+   - DocManagApi_pruebaIa.Presentation
+
+2. Responsabilidades por capa:
+   - Domain:
+     - Entidades de dominio, agregados, value objects, eventos de dominio.
+     - Reglas de negocio e invariantes (profundidad de carpetas, límites de hijos/documentos, permisos, etc.).
+     - Sin referencias a EF Core ni a PostgreSQL.
+   - Application:
+     - Casos de uso (Commands/Queries) usando MediatR.
+     - Interfaces de repositorio y servicios (puertos de salida).
+     - DTOs de entrada/salida.
+     - Manejo de errores de dominio y validaciones de aplicación.
+   - Infrastructure:
+     - Implementaciones de repositorios usando EF Core + Npgsql.
+     - DbContext del módulo (por ejemplo DocumentManagementDbContext).
+     - Configuración de entidades y mapeos (Fluent API).
+     - Adaptadores de persistencia a dominio y viceversa.
+   - Api:
+     - ASP.NET Core minimal APIs o controladores.
+     - Endpoints para folders, documents y permissions.
+     - Integración con la capa Application vía MediatR.
+     - No implementes autenticación real, pero deja preparado el uso de userId/roleId.
+
+3. Entregable esperado en esta respuesta:
+   - Estructura de carpetas/proyectos detallada (en formato de árbol).
+   - Lista de clases/archivos clave en cada capa (con nombres de namespaces).
+   - Descripción del flujo de datos para un par de casos de uso representativos:
+     - Crear carpeta.
+     - Subir documento.
+     - Descargar documento (con registro de auditoría).
+   - Propuesta de convención de Conventional Commits para este módulo (por ejemplo: feat:, fix:, refactor:, chore:, test:, docs:), con ejemplos concretos orientados al desarrollo de este módulo.
+
+No generes aquí todo el código completo; solo la estructura propuesta, ejemplos de firmas de interfaces y un par de ejemplos de clases esqueleto (sin implementación detallada) para ilustrar el patrón.

@@ -1,0 +1,36 @@
+Actúa como un desarrollador backend en C#/.NET 9 trabajando con Clean Architecture + DDD.
+
+Quiero que DEFINAS las INTERFACES de REPOSITORIO (puertos de salida) y una IMPLEMENTACIÓN básica para el módulo "Gestión documental" de DomoNow.
+
+Contexto:
+- Capas:
+  - DocManagApi_pruebaIa.Domain
+  - DocManagApi.Application
+  - DocManagApi.Infrastructure
+- Base de datos: PostgreSQL via EF Core + Npgsql.
+- Modelo de dominio ya definido (Folder como agregado raíz, Document, FolderPermission, AuditLog, etc.).
+- Casos de uso principales: gestionar carpetas, documentos, permisos y auditoría.
+
+Requisitos:
+
+1. En la capa Application:
+   - Define interfaces de repositorio como:
+     - IFolderRepository
+     - IDocumentRepository
+     - IFolderPermissionRepository
+     - IAuditLogRepository
+   - Para cada interfaz, define métodos alineados a los casos de uso (por ejemplo: GetByIdAsync, AddAsync, UpdateAsync, DeleteAsync, GetByNameFilterAsync, etc.).
+   - Usa Task y patrones asincrónicos típicos de .NET 9.
+
+2. En la capa Infrastructure:
+   - Propón una implementación básica de estos repositorios usando EF Core + Npgsql.
+   - Muestra el patrón para mapear entre entidades de dominio y entidades de persistencia (pueden ser las mismas clases o clases separadas si lo justificas).
+   - Incluye ejemplos de implementación básica de uno o dos métodos por repositorio (por ejemplo: AddAsync y GetByIdAsync).
+
+3. Explica brevemente:
+   - Cómo se inyectan estos repositorios en Application mediante DI.
+   - Cómo se registran en la capa Api (por ejemplo, en Program.cs o en un método de extensión AddDocumentManagementModule).
+
+4. Puedes incluir un DbContext mínimo (DocumentManagementDbContext) solo para mostrar la relación con los repositorios, pero no necesitas escribir toda la configuración detallada de EF Core en este prompt (puede asumirse que ya existe desde otro prompt).
+
+No uses triggers ni lógica de negocio en los repositorios; toda la lógica de negocio debe estar en el dominio y/o en los casos de uso de la capa Application.

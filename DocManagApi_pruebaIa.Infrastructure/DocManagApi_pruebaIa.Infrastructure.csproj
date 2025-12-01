@@ -16,4 +16,8 @@
     <ProjectReference Include="..\DocManagApi_pruebaIa.Domain\DocManagApi_pruebaIa.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
+
 </Project>
