@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DocManagApi_pruebaIa.Application/DocManagApi_pruebaIa.Application.csproj" />
+  <Project Path="DocManagApi_pruebaIa.Domain/DocManagApi_pruebaIa.Domain.csproj" />
+  <Project Path="DocManagApi_pruebaIa.Infrastructure/DocManagApi_pruebaIa.Infrastructure.csproj" />
+  <Project Path="DocumentManagementApi_pruebaIa/DocManagApi_pruebaIa.Presentation.csproj" />
+</Solution>
