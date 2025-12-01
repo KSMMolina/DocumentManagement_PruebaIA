@@ -14,7 +14,7 @@ public sealed class AuditLogRepository : IAuditLogRepository
     public Task AddAsync(AuditLogEntry entry, CancellationToken ct)
     {
         _db.AuditLogs.Add(entry);
-        return Task.CompletedTask;
+        return Task.CompletedTask; // el commit se hace en IUnitOfWork.SaveChangesAsync
     }
 
     public async Task<IReadOnlyCollection<AuditLogEntry>> GetByUserAsync(Guid userId, int take, CancellationToken ct)
@@ -22,6 +22,45 @@ public sealed class AuditLogRepository : IAuditLogRepository
         return await _db.AuditLogs
             .AsNoTracking()
             .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.OccurredAt)
+            .Take(take)
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyCollection<AuditLogEntry>> SearchAsync(
+        Guid? userId,
+        Guid? roleId,
+        Guid? propertyId,
+        Guid? folderId,
+        Guid? documentId,
+        Guid? actionTypeId,
+        DateTime? fromUtc,
+        DateTime? toUtc,
+        int take,
+        CancellationToken ct)
+    {
+        var query = _db.AuditLogs.AsNoTracking().AsQueryable();
+
+        if (userId is not null)
+            query = query.Where(a => a.UserId == userId);
+        if (roleId is not null)
+            query = query.Where(a => a.RoleId == roleId);
+        if (propertyId is not null)
+            query = query.Where(a => a.PropertyId == propertyId);
+        if (folderId is not null)
+            query = query.Where(a => a.FolderId == folderId);
+        if (documentId is not null)
+            query = query.Where(a => a.DocumentId == documentId);
+        if (actionTypeId is not null)
+            query = query.Where(a => a.ActionTypeId == actionTypeId);
+        if (fromUtc is not null)
+            query = query.Where(a => a.OccurredAt >= fromUtc);
+        if (toUtc is not null)
+            query = query.Where(a => a.OccurredAt <= toUtc);
+
+        if (take <= 0) take = 100;
+
+        return await query
             .OrderByDescending(a => a.OccurredAt)
             .Take(take)
             .ToListAsync(ct);

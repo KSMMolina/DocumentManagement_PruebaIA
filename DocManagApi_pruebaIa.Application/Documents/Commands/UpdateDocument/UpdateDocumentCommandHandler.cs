@@ -1,42 +1,43 @@
 using MediatR;
 using DocManagApi_pruebaIa.Application.Abstractions.Persistence;
+using DocManagApi_pruebaIa.Application.Common.Results;
+using DocManagApi_pruebaIa.Domain.Common.Exceptions;
 using DocManagApi_pruebaIa.Domain.ValueObjects;
 
 namespace DocManagApi_pruebaIa.Application.Documents.Commands.UpdateDocument;
 
-public sealed class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentCommand, Unit>
+public sealed class UpdateDocumentCommandHandler : IRequestHandler<UpdateDocumentCommand, Result<Unit>>
 {
-    private readonly IFolderRepository _folderRepo;
+    private readonly IDocumentRepository _docRepo;
     private readonly IUnitOfWork _uow;
 
-    public UpdateDocumentCommandHandler(IFolderRepository folderRepo, IUnitOfWork uow)
+    public UpdateDocumentCommandHandler(IDocumentRepository docRepo, IUnitOfWork uow)
     {
-        _folderRepo = folderRepo;
+        _docRepo = docRepo;
         _uow = uow;
     }
 
-    public async Task<Unit> Handle(UpdateDocumentCommand request, CancellationToken ct)
+    public async Task<Result<Unit>> Handle(UpdateDocumentCommand request, CancellationToken ct)
     {
-        var folder = await _folderRepo.GetByIdAsync(request.FolderId, ct)
-            ?? throw new InvalidOperationException("Folder.NotFound");
-
-        var doc = folder.Documents.FirstOrDefault(d => d.Id == request.DocumentId)
-            ?? throw new InvalidOperationException("Document.NotFound");
+        var doc = await _docRepo.GetByIdAsync(request.DocumentId, ct);
+        if (doc is null)
+            return Result<Unit>.Failure(new Error("Document.NotFound", "No se encontró el documento."));
         if (doc.IsDeleted)
-            throw new InvalidOperationException("Document.Deleted");
+            return Result<Unit>.Failure(new Error("Document.Deleted", "El documento está eliminado."));
 
-        var name = DocumentName.Create(request.Name);
-        var desc = Domain.ValueObjects.FileDescription.Create(request.Description);
+        try
+        {
+            var name = string.IsNullOrWhiteSpace(request.Name) ? doc.Name : DocumentName.Create(request.Name!);
+            var desc = request.Description is null ? doc.Description : FileDescription.Create(request.Description);
 
-        // Validar duplicado de nombre dentro de carpeta
-        if (folder.Documents.Any(d => d.Id != doc.Id && !d.IsDeleted && d.Name.Equals(name)))
-            throw new InvalidOperationException("Document.DuplicateName");
+            doc.Update(name, desc);
+            await _uow.SaveChangesAsync(ct);
 
-        doc.Update(name, desc);
-
-        _folderRepo.Update(folder);
-        await _uow.SaveChangesAsync(ct);
-
-        return Unit.Value;
+            return Result<Unit>.Success(Unit.Value);
+        }
+        catch (DomainException ex)
+        {
+            return Result<Unit>.Failure(DomainExceptionMapper.ToError(ex));
+        }
     }
 }

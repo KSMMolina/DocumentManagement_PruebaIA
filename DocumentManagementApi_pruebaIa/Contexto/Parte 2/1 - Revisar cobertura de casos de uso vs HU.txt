@@ -1,0 +1,46 @@
+Actúa como un revisor técnico senior de .NET 9 con experiencia en Clean Architecture y DDD.
+
+El contexto del proyecto es el módulo de "Gestión documental" de DomoNow. La solución está organizada en estos proyectos:
+
+- DocManagApi_pruebaIa.Domain
+- DocManagApi_pruebaIa.Application
+- DocManagApi_pruebaIa.Infrastructure
+- DocumentManagementApi_pruebaIa (API)
+
+En la capa Application ya existen comandos, queries y repositorios para Folders, Documents y Permissions, usando CQRS y MediatR.
+
+Historia de usuario (HU) que DEBE estar totalmente cubierta:
+
+ADMINISTRADOR
+- Gestionar carpetas relacionadas a una propiedad.
+- Crear, editar y eliminar carpetas y subcarpetas.
+- Agregar archivos a las carpetas, máximo 5 archivos por carpeta.
+- Restringir profundidad de carpetas y subcarpetas a máximo 3 niveles y máximo 2 subcarpetas por carpeta.
+- Almacenar nombre, descripción y fecha de creación del archivo.
+- Actualizar archivos (nombre y descripción).
+- Filtrar por nombre de carpeta y/o archivo.
+- Validar tamaño máximo del archivo de 50 Mb.
+- Gestionar permisos por árbol de archivos (VIEW/DOWNLOAD).
+- Permiso del rol ADMINISTRADOR no puede ser removido.
+
+RESIDENTE
+- Ver y descargar, únicamente si tiene permisos.
+
+AUDITORÍA
+- Registrar auditoría de todas las operaciones, incluyendo descargas de archivos.
+
+Tarea:
+
+1. Revisa la estructura actual de la capa Application del proyecto (namespaces `DocManagApi_pruebaIa.Application.*`).
+2. Lista TODOS los casos de uso que ya existen (Commands/Queries + Handlers) y relaciona cada uno con una parte de la HU.
+3. Identifica si falta algún caso de uso o escenario alterno relevante según la HU (por ejemplo, filtrado por nombre, validación de límites, permisos, auditoría).
+4. Propón una lista final de casos de uso que deberían existir en Application (aunque ya estén implementados) agrupados en:
+   - Carpetas
+   - Documentos
+   - Permisos
+   - Auditoría / descarga
+5. Para cada caso de uso, escribe una breve descripción:
+   - Flujo principal
+   - Escenarios alternos o de error (por ejemplo: carpeta no encontrada, usuario sin permiso, límite excedido, etc.)
+
+La salida debe ser un DOCUMENTO en texto/markdown, no código, que me sirva como documentación de casos de uso implementados y como checklist para la prueba 2.

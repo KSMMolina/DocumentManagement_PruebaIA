@@ -1,0 +1,47 @@
+Actúa como un arquitecto de aplicaciones .NET 9 con experiencia en manejo estructurado de resultados.
+
+Quiero introducir un tipo Result en el módulo de Gestión documental para manejar éxito/fracaso de forma consistente entre Domain, Application y API.
+
+Contexto actual:
+- Existen DomainExceptions en `DocManagApi_pruebaIa.Domain.Common.Exceptions`.
+- Existen códigos de error de dominio en `DocManagApi_pruebaIa.Domain.Common.Results.DomainErrorCodes`.
+- Los Handlers de MediatR devuelven tipos simples como Guid o DTOs.
+- La API usa controladores en `DocumentManagementApi_pruebaIa` sin middleware de excepción sofisticado.
+
+Tarea:
+
+1. Define un tipo genérico `Result<T>` y un tipo `Error` en un nuevo namespace como:
+   - `DocManagApi_pruebaIa.Application.Common.Results`
+   o, si lo consideras mejor, en `DocManagApi_pruebaIa.Domain.Common.Results`.
+
+   Requisitos de Result:
+   - Propiedades:
+     - `bool IsSuccess`
+     - `bool IsFailure`
+     - `T Value` (solo válido cuando hay éxito)
+     - `Error? Error` (solo válido cuando hay fallo)
+   - Métodos estáticos:
+     - `Result.Success(T value)`
+     - `Result.Failure<T>(Error error)`
+   - Tipo `Error` con:
+     - `string Code`
+     - `string Message`
+
+2. Implementa mapeos de DomainException → Error usando `DomainErrorCodes` como códigos.
+   - Por ejemplo: MaxDepthExceededDomainException → Error con Code = DomainErrorCodes.FolderMaxDepthExceeded.
+
+3. Refactoriza al menos los casos de uso más representativos para que sus Handlers usen `Result<T>`:
+   - Crear carpeta.
+   - Crear subcarpeta.
+   - Subir documento.
+   - Asignar permisos / Revocar permisos.
+   - Descargar documento.
+
+   Esto implica que los Commands/Queries sean `IRequest<Result<T>>` en lugar de `IRequest<T>`.
+
+4. En la capa API (`DocumentManagementApi_pruebaIa`), crea un helper o un filtro/middleware que:
+   - Reciba un `Result<T>` desde MediatR.
+   - Si `IsSuccess`, devuelva 200 OK con el valor.
+   - Si `IsFailure`, mapee `Error.Code` a un HTTP status adecuado (400, 403, 404, 409, etc.) y devuelva un cuerpo con Code + Message.
+
+Genera el código C# necesario (clases Result/Error, cambios en Commands/Handlers y ejemplo de mapping a ActionResult en un controlador de la API).

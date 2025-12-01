@@ -9,5 +9,6 @@ public sealed class AssignFolderPermissionsCommandValidator : AbstractValidator<
         RuleFor(x => x.FolderId).NotEmpty();
         RuleFor(x => x.RoleId).NotEmpty();
         RuleFor(x => x.PermissionTypeIds).NotNull().NotEmpty();
+        RuleForEach(x => x.PermissionTypeIds).NotEmpty();
     }
 }

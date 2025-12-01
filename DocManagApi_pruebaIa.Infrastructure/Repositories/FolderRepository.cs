@@ -17,19 +17,13 @@ public sealed class FolderRepository : IFolderRepository
         var f = await _db.Folders.AsNoTracking().FirstOrDefaultAsync(x => x.Id == folderId, ct);
         if (f is null) return null;
 
-        var docsRaw = await _db.Documents.AsNoTracking()
-            .Where(d => d.FolderId == folderId)
-            .ToListAsync(ct);
+        var docsRaw = await _db.Documents.AsNoTracking().Where(d => d.FolderId == folderId).ToListAsync(ct);
 
         // Permisos
-        var permsRaw = await _db.FolderPermissions.AsNoTracking()
-            .Where(p => p.FolderId == folderId)
-            .ToListAsync(ct);
+        var permsRaw = await _db.FolderPermissions.AsNoTracking().Where(p => p.FolderId == folderId).ToListAsync(ct);
 
         // Hijos directos (árbol superficial)
-        var childrenRaw = await _db.Folders.AsNoTracking()
-            .Where(c => c.ParentFolderId == folderId)
-            .ToListAsync(ct);
+        var childrenRaw = await _db.Folders.AsNoTracking().Where(c => c.ParentFolderId == folderId).ToListAsync(ct);
 
         var children = childrenRaw.Select(ch =>
             Folder.Rehydrate(
@@ -107,7 +101,6 @@ public sealed class FolderRepository : IFolderRepository
     {
         _db.Folders.Update(folder);
 
-        // Documentos nuevos (slots libres)
         var existingDocs = _db.Documents
             .Where(d => d.FolderId == folder.Id)
             .Select(d => new { d.Id, Slot = EF.Property<short>(d, "file_slot") })
@@ -143,6 +136,64 @@ public sealed class FolderRepository : IFolderRepository
 
     public Task<bool> ExistsByNameAtLevelAsync(Guid propertyId, Guid? parentFolderId, string folderName, CancellationToken ct)
         => _db.Folders.AnyAsync(x => x.PropertyId == propertyId && x.ParentFolderId == parentFolderId && x.Name.Value == folderName, ct);
+
+    // IMPLEMENTACIONES FALTANTES
+
+    // Búsqueda por nombre parcial en una propiedad (case-insensitive si la DB soporta ILIKE)
+    public async Task<IReadOnlyCollection<Folder>> SearchByNameAsync(Guid propertyId, string nameLike, int take, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(nameLike)) nameLike = string.Empty;
+        if (take <= 0) take = 50;
+
+        var needle = nameLike.Trim().ToLowerInvariant();
+
+        return await _db.Folders.AsNoTracking()
+            .Where(f => f.PropertyId == propertyId &&
+                        f.Name.Value.ToLower()!.Contains(needle))
+            .OrderBy(f => f.Depth.Value)
+            .ThenBy(f => f.Name.Value)
+            .Take(take)
+            .ToListAsync(ct);
+    }
+
+    // Obtener carpetas raíz (depth == 1) de una propiedad
+    public async Task<IReadOnlyCollection<Folder>> GetRootFoldersAsync(Guid propertyId, CancellationToken ct)
+    {
+        return await _db.Folders.AsNoTracking()
+            .Where(f => f.PropertyId == propertyId && f.ParentFolderId == null && f.Depth.Value == 1)
+            .OrderBy(f => f.Name.Value)
+            .ToListAsync(ct);
+    }
+
+    // Árbol superficial: raíces y sus hijos directos de una propiedad
+    public async Task<IReadOnlyCollection<Folder>> GetFolderTreeLevelAsync(Guid propertyId, CancellationToken ct)
+    {
+        var roots = await GetRootFoldersAsync(propertyId, ct);
+
+        var result = new List<Folder>(roots.Count);
+        foreach (var root in roots)
+        {
+            var childrenRaw = await _db.Folders.AsNoTracking()
+                .Where(f => f.ParentFolderId == root.Id)
+                .ToListAsync(ct);
+
+            var children = childrenRaw.Select(ch =>
+                Folder.Rehydrate(ch.Id, ch.PropertyId, ch.ParentFolderId, ch.Depth.Value, ch.Name.Value, ch.Description, ch.IsDeleted,
+                    documents: Enumerable.Empty<Document>(),
+                    permissions: Enumerable.Empty<FolderPermission>(),
+                    children: Enumerable.Empty<Folder>())
+            ).ToList();
+
+            var aggregated = Folder.Rehydrate(root.Id, root.PropertyId, root.ParentFolderId, root.Depth.Value, root.Name.Value, root.Description, root.IsDeleted,
+                documents: Enumerable.Empty<Document>(),
+                permissions: Enumerable.Empty<FolderPermission>(),
+                children: children);
+
+            result.Add(aggregated);
+        }
+
+        return result;
+    }
 
     public async Task<IReadOnlyCollection<Folder>> GetChildrenAsync(Guid parentFolderId, CancellationToken ct)
     {

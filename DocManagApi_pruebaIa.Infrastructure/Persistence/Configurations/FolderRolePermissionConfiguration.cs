@@ -4,7 +4,7 @@ using DocManagApi_pruebaIa.Domain.Entities;
 
 namespace DocManagApi_pruebaIa.Infrastructure.Persistence.Configurations;
 
-public sealed class FolderPermissionConfiguration : IEntityTypeConfiguration<FolderPermission>
+public sealed class FolderRolePermissionConfiguration : IEntityTypeConfiguration<FolderPermission>
 {
     public void Configure(EntityTypeBuilder<FolderPermission> builder)
     {

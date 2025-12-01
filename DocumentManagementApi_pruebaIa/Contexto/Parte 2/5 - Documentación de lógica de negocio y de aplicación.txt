@@ -1,0 +1,43 @@
+Actúa como analista y arquitecto de software sobre el módulo de Gestión documental ya implementado.
+
+Necesito generar documentación ligera pero clara para la prueba 2, basada en el código actual del proyecto (Domain + Application + Infrastructure + Api).
+
+Tarea:
+
+1. Casos de uso:
+   - Lista todos los casos de uso implementados en la capa Application (Commands/Queries).
+   - Para cada uno, documenta:
+     - Nombre del caso de uso (por ejemplo, "Crear carpeta").
+     - Tipo (Command o Query).
+     - Proyecto y namespace (por ejemplo, DocManagApi_pruebaIa.Application.Folders.Commands.CreateFolder).
+     - Flujo principal paso a paso.
+     - Escenarios alternos o de error gestionados.
+
+2. Lógica de negocio (dominio):
+   - Resume las reglas de negocio principales implementadas en las entidades/Value Objects de dominio:
+     - Reglas de profundidad, cantidad de subcarpetas, cantidad de documentos, tamaño máximo de archivo, permisos de ADMIN, etc.
+   - Indica en qué clases se encuentran (por ejemplo, Folder, Document, FolderPermission, Value Objects como FileSize, DocumentName).
+
+3. Lógica de aplicación:
+   - Describe cómo los Handlers orquestan:
+     - repositorios (interfaces en Application, implementación en Infrastructure),
+     - entidades de dominio,
+     - UnitOfWork,
+     - auditoría,
+     - Result<T> (si ya está integrado).
+
+4. Validaciones:
+   - Separa las validaciones por capa:
+     - Dominio: invariantes, reglas que lanzan DomainException.
+     - Application: existencia de entidades, permisos, coordenación de casos de uso.
+     - Entrada de datos: validaciones de DTO/Commands (por ejemplo, FluentValidation si se usa).
+
+5. Formato de salida:
+   - Entrega un documento en Markdown con secciones:
+     - `## Casos de uso`
+     - `## Reglas de negocio del dominio`
+     - `## Lógica de aplicación`
+     - `## Validaciones por capa`
+   - Agrega, si es posible, pequeños diagramas en texto (ASCII) o descripciones tipo C4 de nivel muy alto para ilustrar el flujo (API → Application → Domain → Infrastructure).
+
+No generes código en esta respuesta; genera solo el documento de documentación en texto/markdown.

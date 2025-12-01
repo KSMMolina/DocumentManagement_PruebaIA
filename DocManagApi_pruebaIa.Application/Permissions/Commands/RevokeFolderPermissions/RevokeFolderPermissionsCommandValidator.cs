@@ -9,5 +9,6 @@ public sealed class RevokeFolderPermissionsCommandValidator : AbstractValidator<
         RuleFor(x => x.FolderId).NotEmpty();
         RuleFor(x => x.RoleId).NotEmpty();
         RuleFor(x => x.PermissionTypeIds).NotNull().NotEmpty();
+        RuleForEach(x => x.PermissionTypeIds).NotEmpty();
     }
 }

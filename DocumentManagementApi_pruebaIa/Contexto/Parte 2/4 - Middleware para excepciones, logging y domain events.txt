@@ -1,0 +1,38 @@
+Actúa como un desarrollador backend senior experto en ASP.NET Core y patrones cross-cutting.
+
+Quiero agregar middlewares y comportamientos transversales al módulo de Gestión documental:
+
+Objetivos:
+- Manejo global de excepciones.
+- Logging básico de errores y auditoría técnica.
+- Integración con Domain Events (si aplica).
+- Uso con el tipo Result<T> definido previamente.
+
+Contexto:
+- API: proyecto `DocumentManagementApi_pruebaIa` usando controladores.
+- Lógica de dominio: `DocManagApi_pruebaIa.Domain` con DomainExceptions y Domain Events.
+- Lógica de aplicación: `DocManagApi_pruebaIa.Application` usando MediatR, repositorios, UnitOfWork.
+- Result<T> definido y en uso en algunos handlers.
+
+Tarea:
+
+1. Crea un middleware global de excepciones en la API (por ejemplo, `ExceptionHandlingMiddleware`) que:
+   - Intercepte DomainExceptions, ApplicationExceptions y excepciones no controladas.
+   - Mapee las DomainExceptions a códigos de error (DomainErrorCodes) y a códigos HTTP adecuados.
+   - Devuelva siempre una respuesta JSON con:
+     - `traceId`,
+     - `errorCode`,
+     - `message`.
+
+2. Registra este middleware en `Program.cs` de `DocumentManagementApi_pruebaIa` antes de `UseAuthorization()`.
+
+3. (Opcional pero recomendado) Crea un PipelineBehavior de MediatR en `DocManagApi_pruebaIa.Application` llamado algo como `LoggingBehavior<TRequest, TResponse>` que:
+   - Loggee inicio y fin de cada petición de caso de uso.
+   - En caso de DomainException o error, registre información básica (nombre del caso de uso, Id de agregados afectados, etc.).
+   - No mezcle lógica de negocio, solo logging.
+
+4. Explica brevemente en comentarios o XML docs:
+   - Qué responsabilidades se mueven al middleware y al behavior.
+   - Qué sigue siendo responsabilidad de la capa de dominio.
+
+Genera el código C# necesario (middleware, pipeline behavior y configuración en Program.cs).

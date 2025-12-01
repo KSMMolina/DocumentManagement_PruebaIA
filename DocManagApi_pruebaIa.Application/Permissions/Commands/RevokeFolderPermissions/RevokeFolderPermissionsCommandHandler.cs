@@ -1,16 +1,22 @@
 using MediatR;
 using DocManagApi_pruebaIa.Application.Abstractions.Persistence;
+using DocManagApi_pruebaIa.Application.Common.Results;
+using DocManagApi_pruebaIa.Domain.Common.Exceptions;
 
 namespace DocManagApi_pruebaIa.Application.Permissions.Commands.RevokeFolderPermissions;
 
-public sealed class RevokeFolderPermissionsCommandHandler : IRequestHandler<RevokeFolderPermissionsCommand, Unit>
+public sealed class RevokeFolderPermissionsCommandHandler : IRequestHandler<RevokeFolderPermissionsCommand, Result<Unit>>
 {
     private readonly IFolderRepository _folderRepo;
     private readonly IRoleRepository _roleRepo;
     private readonly IPermissionTypeRepository _permRepo;
     private readonly IUnitOfWork _uow;
 
-    public RevokeFolderPermissionsCommandHandler(IFolderRepository folderRepo, IRoleRepository roleRepo, IPermissionTypeRepository permRepo, IUnitOfWork uow)
+    public RevokeFolderPermissionsCommandHandler(
+        IFolderRepository folderRepo,
+        IRoleRepository roleRepo,
+        IPermissionTypeRepository permRepo,
+        IUnitOfWork uow)
     {
         _folderRepo = folderRepo;
         _roleRepo = roleRepo;
@@ -18,26 +24,41 @@ public sealed class RevokeFolderPermissionsCommandHandler : IRequestHandler<Revo
         _uow = uow;
     }
 
-    public async Task<Unit> Handle(RevokeFolderPermissionsCommand request, CancellationToken ct)
+    public async Task<Result<Unit>> Handle(RevokeFolderPermissionsCommand request, CancellationToken ct)
     {
-        var folder = await _folderRepo.GetByIdAsync(request.FolderId, ct)
-            ?? throw new InvalidOperationException("Folder.NotFound");
+        var folder = await _folderRepo.GetByIdAsync(request.FolderId, ct);
+        if (folder is null || folder.IsDeleted)
+            return Result<Unit>.Failure(Error.From("Folder.NotFound", "No se encontró la carpeta."));
 
-        var roleCode = await _roleRepo.GetRoleCodeAsync(request.RoleId, ct)
-            ?? throw new InvalidOperationException("Role.NotFound");
+        var roleTuple = await _roleRepo.GetRoleCodeAsync(request.RoleId, ct);
+        if (roleTuple is null)
+            return Result<Unit>.Failure(Error.From("Role.NotFound", "No se encontró el rol."));
 
         var permCatalog = new List<(Guid permId, string permCode)>();
         foreach (var pid in request.PermissionTypeIds)
         {
-            var pc = await _permRepo.GetPermissionCodeAsync(pid, ct)
-                ?? throw new InvalidOperationException("PermissionType.NotFound");
-            permCatalog.Add(pc);
+            var permTuple = await _permRepo.GetPermissionCodeAsync(pid, ct);
+            if (permTuple is null)
+                return Result<Unit>.Failure(Error.From("PermissionType.NotFound", $"No se encontró el permiso '{pid}'."));
+            permCatalog.Add(permTuple.Value);
         }
 
-        folder.RevokePermissions(request.RoleId, request.PermissionTypeIds, new[] { roleCode }, permCatalog);
-        _folderRepo.Update(folder);
-        await _uow.SaveChangesAsync(ct);
+        try
+        {
+            folder.RevokePermissions(
+                request.RoleId,
+                request.PermissionTypeIds,
+                new[] { roleTuple.Value },
+                permCatalog);
 
-        return Unit.Value;
+            _folderRepo.Update(folder);
+            await _uow.SaveChangesAsync(ct);
+
+            return Result<Unit>.Success(Unit.Value);
+        }
+        catch (DomainException ex)
+        {
+            return Result<Unit>.Failure(DomainExceptionMapper.ToError(ex));
+        }
     }
 }

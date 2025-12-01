@@ -1,0 +1,44 @@
+Actúa como desarrollador backend senior en C#/.NET 9 aplicando Clean Architecture, DDD, SOLID y CQRS.
+
+Contexto del proyecto:
+
+- Capa de dominio: DocManagApi_pruebaIa.Domain (Entities, ValueObjects, Domain Events).
+- Capa de aplicación: DocManagApi_pruebaIa.Application (Commands, Queries, Handlers, Abstractions.Persistence).
+- Capa de infraestructura: DocManagApi_pruebaIa.Infrastructure (EF Core + PostgreSQL, repositorios, UnitOfWork).
+- Capa API: DocumentManagementApi_pruebaIa.
+
+Patrones ya presentes:
+- MediatR para Commands/Queries.
+- Repositorios: IFolderRepository, IDocumentRepository, IFolderPermissionRepository, IAuditLogRepository, etc.
+- UnitOfWork: IUnitOfWork.
+- Entidades de dominio como Folder, Document, FolderPermission, con invariantes (máx. profundidad, máx. subcarpetas, máx. documentos, tamaño de archivo, permisos de admin, etc.).
+
+Tarea:
+
+1. Revisa los comandos y handlers existentes en:
+   - `DocManagApi_pruebaIa.Application.Folders.Commands.*`
+   - `DocManagApi_pruebaIa.Application.Documents.Commands.*`
+   - `DocManagApi_pruebaIa.Application.Permissions.Commands.*`
+   - `DocManagApi_pruebaIa.Application.Documents.Queries.DownloadDocument.*`
+
+2. Para cada caso de uso de la HU de Gestión documental, garantiza que el Handler:
+   - Cargue las entidades desde los repositorios adecuados.
+   - Llame a los métodos del agregado raíz Folder/Document para aplicar reglas de negocio.
+   - Use IUnitOfWork para persistir cambios de forma transaccional.
+   - Registre auditoría en IAuditLogRepository cuando aplique (creación, actualización, eliminación, asignación de permisos, descargas).
+   - Maneje de forma explícita escenarios de error esperables:
+     - entidad no encontrada,
+     - operación sobre carpeta eliminada,
+     - límite de profundidad / subcarpetas / documentos,
+     - archivo mayor a 50 Mb,
+     - intento de revocar permisos de ADMIN.
+
+3. Donde actualmente haya lanzamientos genéricos de excepciones (`InvalidOperationException`, etc.), reemplázalos por:
+   - Excepciones de dominio específicas (ya existentes en DocManagApi_pruebaIa.Domain.Common.Exceptions) cuando la regla es de dominio.
+   - Errores de aplicación bien nombrados cuando el problema es de orquestación (por ejemplo, recurso no encontrado).
+
+4. Asegúrate de que cada Handler:
+   - No contenga lógica de negocio “pesada” (esa debe vivir en el Domain).
+   - Solo coordine repositorios, entidades de dominio, UnitOfWork y auditoría.
+
+Genera y ajusta el CÓDIGO C# necesario para dejar los Handlers de los casos de uso principales correctamente implementados según estas reglas.

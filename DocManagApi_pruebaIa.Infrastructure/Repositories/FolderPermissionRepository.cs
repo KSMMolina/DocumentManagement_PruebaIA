@@ -11,4 +11,15 @@ public sealed class FolderPermissionRepository : IFolderPermissionRepository
 
     public Task<bool> HasPermissionAsync(Guid folderId, Guid roleId, Guid permissionTypeId, CancellationToken ct)
         => _db.FolderPermissions.AnyAsync(x => x.FolderId == folderId && x.RoleId == roleId && x.PermissionTypeId == permissionTypeId, ct);
+
+    public async Task<IReadOnlyCollection<(Guid RoleId, Guid PermissionTypeId)>> GetPermissionsAsync(Guid folderId, CancellationToken ct)
+    {
+        var list = await _db.FolderPermissions
+            .AsNoTracking()
+            .Where(p => p.FolderId == folderId)
+            .Select(p => new { p.RoleId, p.PermissionTypeId })
+            .ToListAsync(ct);
+
+        return list.Select(p => (p.RoleId, p.PermissionTypeId)).ToList();
+    }
 }
