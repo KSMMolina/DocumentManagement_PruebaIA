@@ -1,0 +1,32 @@
+$font-family-base: Inter, SF Pro Display, Roboto !default;
+$font-size-base: 16px !default;
+
+$breakpoints: (
+  xs: 0,
+  // Extra pequeño
+  sm: 576px,
+  // Pequeño
+  md: 768px,
+  // Mediano
+  lg: 992px,
+  // Grande
+  xl: 1200px // Extra grande,,,,
+) !default;
+
+// Espaciado entre columnas (gutters)
+$gutter-width: 1.5rem !default;
+
+// Cantidad máxima de columnas
+$total-columns: 12 !default;
+
+$measures: (
+  vmn: 0.1vmin,
+  vmx: 0.1vmax,
+  rem: 0.01rem,
+  em: 0.01em,
+  vh: 0.1vh,
+  vw: 0.1vw,
+  px: 1px,
+  pg: 1%,
+);
+

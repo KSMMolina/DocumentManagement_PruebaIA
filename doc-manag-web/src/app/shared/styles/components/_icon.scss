@@ -1,0 +1,12 @@
+.icon-wrapper {
+  position: relative;
+  cursor: pointer;
+  height: 100%;
+
+  & .content-skeleton {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+  }
+}

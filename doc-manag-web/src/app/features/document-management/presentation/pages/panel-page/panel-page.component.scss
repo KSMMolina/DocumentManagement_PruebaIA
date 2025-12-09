@@ -1,0 +1,26 @@
+.panel-page {
+  padding: 24px;
+
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__link {
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
