@@ -1,0 +1,857 @@
+@use "../core/typography";
+@use "../core/functions";
+@use "../core/global";
+@use "../core/mixins";
+@use "../core/theme";
+
+@use "sass:list";
+
+$generalElevation: l1;
+
+@mixin buttonSize($alias, $padding, $column-gap, $size, $font-size) {
+  &-#{$alias} {
+    padding: global.get-specific-value(space, list.nth($padding, 1))
+      global.get-specific-value(space, list.nth($padding, 2));
+    column-gap: global.get-specific-value(space, $column-gap);
+    min-width: functions.convertToRem($size);
+    height: functions.convertToRem($size);
+
+    @include typography.get-typography-style(heading, $font-size);
+  }
+}
+
+.button {
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease, text-decoration 0.3s ease, box-shadow 0.3s ease;
+  justify-content: center;
+  border-style: solid;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+
+  &:not(.button-circle):not(.button-square):not(.button-pill) {
+    border-width: global.get-specific-value(border-width, xs);
+  }
+
+  &:not(.button-circle):not(.button-pill) {
+    &:not(.button-2xs) {
+      border-radius: global.get-specific-value(border-radius, l);
+    }
+  }
+
+  &[disabled="true"] {
+    color: var(--color-content-disabled);
+    pointer-events: none;
+
+    @include mixins.colorSVG();
+
+    &:not(.button-style-disabled-ghost):not(.button-style-disabled-outline) {
+      background-color: var(--color-background-disabled);
+      border-color: var(--color-background-disabled);
+    }
+
+    &.button-style-disabled-ghost {
+      background-color: transparent;
+      border-color: transparent;
+    }
+
+    &.button-style-disabled-outline {
+      background-color: transparent;
+      border-color: var(--color-border-disabled);
+    }
+  }
+
+  &[loading="true"] {
+    pointer-events: none;
+  }
+
+  &:active {
+    border-width: global.get-specific-value(border-width, m);
+    box-shadow: none;
+  }
+
+  /** Tamaños general */
+  &-l {
+    padding: global.get-specific-value(space, l)
+      global.get-specific-value(space, 2xl);
+    column-gap: global.get-specific-value(space, l);
+    height: functions.convertToRem(48px);
+
+    @include typography.get-typography-style(heading, m);
+  }
+
+  &-m {
+    padding: global.get-specific-value(space, m)
+      global.get-specific-value(space, xl);
+    column-gap: global.get-specific-value(space, m);
+    height: functions.convertToRem(48px);
+
+    @include typography.get-typography-style(heading, m);
+  }
+
+  &-s {
+    padding: global.get-specific-value(space, s)
+      global.get-specific-value(space, l);
+    column-gap: global.get-specific-value(space, s);
+    height: functions.convertToRem(44px);
+
+    @include typography.get-typography-style(heading, s);
+  }
+
+  &-xs {
+    padding: global.get-specific-value(space, xs)
+      global.get-specific-value(space, m);
+    column-gap: global.get-specific-value(space, xs);
+    height: functions.convertToRem(40px);
+    min-width: functions.convertToRem(40px);
+
+    @include typography.get-typography-style(heading, xs);
+  }
+
+  &-2xs {
+    border-radius: global.get-specific-value(border-radius, m);
+    padding: global.get-specific-value(space, xs)
+      global.get-specific-value(space, m);
+    column-gap: global.get-specific-value(space, s);
+    height: functions.convertToRem(28px);
+
+    @include typography.get-typography-style(heading, 2xs);
+  }
+
+  /** Variantes de colores */
+  &:not([disabled="true"]) {
+    &.button {
+      &-brand {
+        background-color: var(--color-background-brand);
+        color: var(--color-content-secondary-inverse);
+        border-color: var(--color-background-brand);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-background-brand-hover);
+          border-color: var(--color-background-brand-hover);
+
+          @include global.get-elevation(
+            $generalElevation,
+            theme.get-specific-color-from-tokens(background, brand-hover)
+          );
+        }
+
+        &:active {
+          background-color: var(--color-background-brand-pressed);
+          border-color: var(--color-background-brand);
+        }
+
+        &-inverse {
+          background-color: var(--color-content-secondary-inverse);
+          color: var(--color-content-brand);
+          border-color: var(--color-border-brand);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-background-brand-low);
+            border-color: var(--color-background-brand-low);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(background, brand-low)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-background-brand-pressed);
+            border-color: var(--color-content-brand);
+            color: var(--color-content-secondary-inverse);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-white {
+        &-outline {
+          background-color: transparent;
+          color: var(--color-content-secondary-inverse);
+          border-color: var(--color-content-secondary-inverse);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-neutral-100);
+            border-color: var(--color-neutral-100);
+            color: var(--color-background-secondary-high);
+
+            @include mixins.colorSVG();
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-theme(neutral, 100)
+            );
+          }
+
+          &:active {
+            background-color: transparent;
+            border-color: var(--color-content-secondary-mid);
+            color: var(--color-background-secondary-mid);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-secondary-inverse);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-secondary-mid-inverse);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-secondary-low-inverse);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-secondary {
+        background-color: var(--color-content-secondary);
+        color: var(--color-content-secondary-inverse);
+        border-color: var(--color-content-secondary);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-secondary-600);
+          border-color: var(--color-secondary-600);
+
+          @include global.get-elevation(
+            $generalElevation,
+            theme.get-specific-color-from-theme(secondary, 600)
+          );
+        }
+
+        &:active {
+          background-color: var(--color-secondary-700);
+          border-color: var(--color-content-secondary);
+        }
+
+        &-inverse {
+          background-color: var(--color-content-secondary-inverse);
+          color: var(--color-content-secondary);
+          border-color: var(--color-content-secondary);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-neutral-50);
+            border-color: var(--color-neutral-50);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-theme(neutral, 50)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-neutral-100);
+            border-color: var(--color-content-secondary-high);
+          }
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-secondary);
+          border-color: var(--color-content-secondary);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-secondary-mid);
+            color: var(--color-content-secondary-mid);
+
+            @include mixins.colorSVG();
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-theme(neutral, 50)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-neutral-100);
+            border-color: var(--color-content-secondary-low);
+            color: var(--color-content-secondary-low);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-secondary);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-secondary-600);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-secondary-700);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-accent {
+        background-color: var(--color-background-accent);
+        color: var(--color-content-secondary);
+        border-color: var(--color-background-accent);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-background-accent-hover);
+          border-color: var(--color-background-accent-hover);
+
+          @include global.get-elevation(
+            $generalElevation,
+            theme.get-specific-color-from-tokens(background, accent-hover)
+          );
+        }
+
+        &:active {
+          background-color: var(--color-background-accent-pressed);
+          border-color: var(--color-background-accent);
+        }
+      }
+
+      &-tertiary {
+        background-color: var(--color-content-link);
+        color: var(--color-content-secondary-inverse);
+        border-color: var(--color-content-link);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-content-link-hover);
+          border-color: var(--color-content-link-hover);
+
+          @include global.get-elevation(
+            $generalElevation,
+            theme.get-specific-color-from-tokens(content, link-hover)
+          );
+        }
+
+        &:active {
+          background-color: var(--color-content-link-pressed);
+          border-color: var(--color-content-link);
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-link);
+          border-color: var(--color-content-link);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-blue-100);
+            border-color: var(--color-blue-100);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-theme(blue, 100)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-blue-100);
+            border-color: var(--color-content-link-pressed);
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-link);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-link-hover);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-link-pressed);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-success {
+        background-color: var(--color-content-success);
+        color: var(--color-background-success);
+        border-color: var(--color-content-success);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-content-success-bold);
+          border-color: var(--color-content-success-bold);
+
+          @include global.get-elevation(
+            $generalElevation,
+            theme.get-specific-color-from-tokens(content, success-bold)
+          );
+        }
+
+        &:active {
+          background-color: var(--color-content-success-bold);
+          border-color: var(--color-content-success);
+        }
+
+        &-inverse {
+          background-color: var(--color-background-success);
+          color: var(--color-content-success);
+          border-color: var(--color-content-success);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-background-success-subtle);
+            border-color: var(--color-background-success-subtle);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(background, success-subtle)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-content-success-bold);
+            border-color: var(--color-content-success);
+            color: var(--color-background-success-subtle);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-success);
+          border-color: var(--color-border-success);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-success-bold);
+            color: var(--color-content-success-bold);
+
+            @include mixins.colorSVG();
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(content, success-bold)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-success);
+            color: var(--color-content-success-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-success);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-success-bold);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-success-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-error {
+        background-color: var(--color-content-error);
+        color: var(--color-background-error);
+        border-color: var(--color-content-error);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-content-error-bold);
+          border-color: var(--color-content-error-bold);
+        }
+
+        &:active {
+          background-color: var(--color-content-error-bold);
+          border-color: var(--color-content-error);
+        }
+
+        &-inverse {
+          background-color: var(--color-background-error);
+          color: var(--color-content-error);
+          border-color: var(--color-content-error);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-background-error-subtle);
+            border-color: var(--color-background-error-subtle);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            background-color: var(--color-content-error-bold);
+            border-color: var(--color-content-error);
+            color: var(--color-background-error-subtle);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-error);
+          border-color: var(--color-border-error);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-error-bold);
+            color: var(--color-content-error-bold);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(content, error-bold)
+            );
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-error);
+            color: var(--color-content-error-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-error);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-error-bold);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-error-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-warning {
+        background-color: var(--color-content-warning);
+        color: var(--color-background-warning);
+        border-color: var(--color-content-warning);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-content-warning-bold);
+          border-color: var(--color-content-warning-bold);
+        }
+
+        &:active {
+          background-color: var(--color-content-warning-bold);
+          border-color: var(--color-content-warning);
+        }
+
+        &-inverse {
+          background-color: var(--color-background-warning);
+          color: var(--color-content-warning);
+          border-color: var(--color-content-warning);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-background-warning-subtle);
+            border-color: var(--color-background-warning-subtle);
+          }
+
+          &:active {
+            background-color: var(--color-content-warning-bold);
+            border-color: var(--color-content-warning);
+            color: var(--color-background-warning-subtle);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-warning);
+          border-color: var(--color-border-warning);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-warning-bold);
+            color: var(--color-content-warning-bold);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(content, warning-bold)
+            );
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-warning-bold);
+            color: var(--color-content-warning-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-warning);
+          border-color: transparent;
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-warning-bold);
+
+            @include mixins.colorSVG();
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-warning-bold);
+
+            @include mixins.colorSVG();
+          }
+        }
+      }
+
+      &-info {
+        background-color: var(--color-content-info);
+        color: var(--color-background-info);
+        border-color: var(--color-content-info);
+
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-content-info-bold);
+          border-color: var(--color-content-info-bold);
+        }
+
+        &:active {
+          background-color: var(--color-content-info-bold);
+          border-color: var(--color-content-info);
+        }
+
+        &-inverse {
+          background-color: var(--color-background-info);
+          color: var(--color-content-info);
+          border-color: var(--color-content-info);
+
+          @include mixins.colorSVG();
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-background-info-subtle);
+            border-color: var(--color-background-info-subtle);
+          }
+
+          &:active {
+            background-color: var(--color-content-info-bold);
+            border-color: var(--color-content-info);
+            color: var(--color-background-info-subtle);
+
+            @include mixins.colorSVG();
+          }
+        }
+
+        &-outline {
+          background-color: var(--color-basic-white);
+          color: var(--color-content-info);
+          border-color: var(--color-border-info);
+
+          &:hover,
+          &:focus {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-info-bold);
+            color: var(--color-content-info-bold);
+
+            @include global.get-elevation(
+              $generalElevation,
+              theme.get-specific-color-from-tokens(content, info-bold)
+            );
+          }
+
+          &:active {
+            background-color: var(--color-basic-white);
+            border-color: var(--color-content-info);
+            color: var(--color-content-info-bold);
+          }
+        }
+
+        &-ghost {
+          background-color: transparent;
+          color: var(--color-content-info);
+          border-color: transparent;
+
+          &:hover,
+          &:focus {
+            text-decoration: underline;
+            color: var(--color-content-info-bold);
+          }
+
+          &:active {
+            text-decoration: none;
+            color: var(--color-content-info-bold);
+          }
+        }
+      }
+    }
+  }
+
+  /** Variantes circle, square y pill */
+  &-circle {
+    border-radius: global.get-specific-value(border-radius, circle);
+  }
+
+  &-circle,
+  &-square {
+    &:not(.button-circle-2xs):not(.button-square-2xs) {
+      border-width: global.get-specific-value(border-width, m);
+    }
+
+    &-xl {
+      padding: global.get-specific-value(space, xl);
+      height: functions.convertToRem(96px);
+      width: functions.convertToRem(96px);
+    }
+
+    &-l {
+      padding: global.get-specific-value(space, l);
+      height: functions.convertToRem(64px);
+      width: functions.convertToRem(64px);
+    }
+
+    &-m {
+      padding: global.get-specific-value(space, m);
+      height: functions.convertToRem(48px);
+      width: functions.convertToRem(48px);
+    }
+
+    &-s {
+      padding: global.get-specific-value(space, s);
+      height: functions.convertToRem(34px);
+      width: functions.convertToRem(34px);
+    }
+
+    &-xs {
+      padding: global.get-specific-value(space, xs);
+      height: functions.convertToRem(24px);
+      width: functions.convertToRem(24px);
+    }
+
+    &-2xs {
+      border-width: global.get-specific-value(border-width, xs);
+      padding: global.get-specific-value(space, xs);
+      height: functions.convertToRem(20px);
+      width: functions.convertToRem(20px);
+    }
+  }
+
+  &-pill {
+    border-radius: global.get-specific-value(border-radius, pill);
+  }
+}

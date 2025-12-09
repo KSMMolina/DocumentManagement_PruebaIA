@@ -1,0 +1,122 @@
+@use "../core/typography";
+@use "../core/functions";
+@use "../core/global";
+@use "../core/theme";
+
+.slide {
+  row-gap: global.get-specific-value(space, s);
+  grid-template-rows: 1fr auto;
+  display: grid;
+  height: 100%;
+  width: 100%;
+
+  &-content {
+    position: relative;
+    overflow: hidden;
+  }
+
+  &-item {
+    transition: transform 0.5s ease, width 0.3s ease-in-out;
+    position: absolute;
+    flex-basis: 100%;
+    height: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+  }
+
+  &-indicators {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+
+    column-gap: global.get-specific-value(space, xs);
+
+    & .item-indicator {
+      transition: background-color 0.3s ease-in-out, width 0.3s ease-in-out,
+        border-radius 0.3s ease-in-out;
+      height: global.get-specific-value(size, l);
+      cursor: pointer;
+      border: none;
+
+      &:not(.item-indicator-selected) {
+        border-radius: global.get-specific-value(border-radius, circle);
+        width: global.get-specific-value(size, l);
+      }
+
+      &-selected {
+        border-radius: global.get-specific-value(border-radius, pill);
+        width: global.get-specific-value(size, 7xl);
+      }
+    }
+  }
+
+  /** Variantes de colores */
+  &:not(.slide-inverse) {
+    & .slide-indicators {
+      & .item-indicator {
+        &:not(.item-indicator-selected) {
+          background-color: var(--color-background-secondary);
+        }
+
+        &-selected {
+          background-color: var(--color-background-secondary-mid);
+        }
+      }
+    }
+  }
+
+  &-inverse {
+    & .slide-indicadors {
+      & .item-indicator {
+        &:not(.item-indicator-selected) {
+          background-color: var(--color-background-secondary-low);
+        }
+
+        &-selected {
+          background-color: var(--color-background-secondary);
+        }
+      }
+    }
+  }
+
+  &:not(.slide-mobile) {
+    &.slide-indicators {
+      & .item-indicator {
+        height: global.get-specific-value(size, l);
+
+        &:not(.item-indicator-selected) {
+          width: global.get-specific-value(size, l);
+        }
+
+        &-selected {
+          width: global.get-specific-value(size, 7xl);
+        }
+      }
+    }
+  }
+
+  &-mobile {
+    &.slide-indicators {
+      & .item-indicator {
+        height: global.get-specific-value(size, 2xs);
+
+        &:not(.item-indicator-selected) {
+          width: global.get-specific-value(size, 2xs);
+        }
+
+        &-selected {
+          width: global.get-specific-value(size, 3xl);
+        }
+      }
+    }
+  }
+
+  /** Variantes estilos */
+  &-split {
+    & .slide-item {
+      border-radius: global.get-specific-value(border-radius, l);
+    }
+  }
+}

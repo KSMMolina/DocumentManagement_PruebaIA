@@ -1,0 +1,23 @@
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/mixins";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+@include mixins.generate-styles("cg", "column-gap", rem, (100));
+
+.container-my-services {
+  &-mobile {
+    & .container-my-services {
+      &-shortcuts {
+        column-gap: global.get-specific-value(space, 2xl);
+        row-gap: global.get-specific-value(space, xl);
+        justify-content: center;
+        flex-wrap: wrap;
+        display: flex;
+
+        &-item {
+          width: functions.convertToRem(84px);
+        }
+      }
+    }
+  }
+}

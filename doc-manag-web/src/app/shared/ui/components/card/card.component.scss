@@ -1,0 +1,30 @@
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+.card {
+  position: relative;
+
+  &:not([class*="padding-"]) {
+    padding: global.get-specific-value(space, l);
+  }
+
+  &:not([class*="border-radius-"]) {
+    border-radius: global.get-specific-value(border-radius, l);
+  }
+
+  &:not(.not-border) {
+    border-width: global.get-specific-value(border-width, xs);
+    border-style: solid;
+
+    &:not([class*="bc-"]) {
+      border-color: var(--color-border-tertiary);
+    }
+  }
+
+  &:not([class*="bg-"]) {
+    background-color: var(--color-background-secondary-inverse);
+  }
+
+  &:not([class*="elevation-"]) {
+    @include global.get-elevation(l2);
+  }
+}

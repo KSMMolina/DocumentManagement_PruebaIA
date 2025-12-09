@@ -1,0 +1,34 @@
+<section class="documents-page">
+  <header class="documents-page__header">
+    <h1 class="documents-page__title">Documentos</h1>
+    <p class="documents-page__subtitle">
+      Vista de gestión de archivos consumiendo la capa de aplicación.
+    </p>
+  </header>
+
+  <main class="documents-page__content">
+    @if (loading()) {
+      <p>Cargando documentos...</p>
+    } @else if (error()) {
+      <p class="documents-page__error">{{ error() }}</p>
+    } @else if (documents().length === 0) {
+      <p>No hay documentos para esta carpeta.</p>
+    } @else {
+      <ul class="documents-page__list">
+        @for (doc of documents(); track doc.id) {
+          <li class="documents-page__item">
+            <strong>{{ doc.name }}</strong>
+            <span class="documents-page__meta">
+              · {{ doc.mimeType }} - {{ doc.sizeBytes }} bytes
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  </main>
+
+  <footer class="documents-page__footer">
+    <a routerLink="/" class="documents-page__link">Volver al panel</a>
+    <a routerLink="/folders" class="documents-page__link">Ir a carpetas</a>
+  </footer>
+</section>

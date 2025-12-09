@@ -1,0 +1,26 @@
+<div class="resident-card">
+  <div class="checkbox-container">
+    <input type="checkbox" class="checkbox" />
+  </div>
+  <div class="resident-initials">{{initials}}</div>
+  <div class="resident-info">
+    <h3>{{name}}</h3>
+    <div class="status-info">
+      <span class="entry-date">Fecha ingreso: {{entryDate}}</span>
+    </div>
+  </div>
+
+  <div class="right-section">
+    <span class="status-badge mobile" [ngClass]="{
+    'status-green': state === 'activo',
+    'status-orange': state === 'por activar',
+    'status-red': state === 'denegado' }">
+      {{ state }}
+    </span>
+
+    <button class="qr-btn" (click)="viewQRCode()">
+      <i class="fa-solid fa-qrcode"></i>
+    </button>
+  </div>
+  <i class="fas fa-chevron-right"></i>
+</div>
