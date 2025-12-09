@@ -1,0 +1,16 @@
+<button
+  [attr.tabindex]="readonly() || loading() || ngControl?.disabled ? -1 : 0"
+  [attr.readonly]="readonly() || loading() || ngControl?.disabled"
+  [appDisabledElement]="disabledElement()"
+  [attr.checked]="value()"
+  (click)="changeValue()"
+  class="switch"
+>
+  <ng-content select="[leftContent]"></ng-content>
+  <div class="switch-track center-all">
+    @if(loading()){
+    <span class="switch-track-loading"></span>
+    }
+  </div>
+  <ng-content select="[rightContent]"></ng-content>
+</button>

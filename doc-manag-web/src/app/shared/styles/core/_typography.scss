@@ -1,0 +1,198 @@
+@use "./global";
+
+$typography-desktop: (
+  heading: (
+    5xl: (
+      size: 10xl,
+      lh: 10xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    4xl: (
+      size: 9xl,
+      lh: 9xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    3xl: (
+      size: 8xl,
+      lh: 8xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    2xl: (
+      size: 7xl,
+      lh: 7xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    xl: (
+      size: 6xl,
+      lh: 6xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    l: (
+      size: 5xl,
+      lh: 5xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    m: (
+      size: 3xl,
+      lh: 3xl,
+      ls: xs,
+      weight: semibold,
+    ),
+    s: (
+      size: 2xl,
+      lh: 2xl,
+      ls: s,
+      weight: semibold,
+    ),
+    xs: (
+      size: xl,
+      lh: xl,
+      ls: s,
+      weight: semibold,
+    ),
+    2xs: (
+      size: m,
+      lh: m,
+      ls: none,
+      weight: semibold,
+    ),
+  ),
+  text-semibold: (
+    xl: (
+      size: 2xl,
+      lh: 2xl,
+      ls: none,
+      weight: semibold,
+    ),
+    l: (
+      size: l,
+      lh: l,
+      ls: none,
+      weight: semibold,
+    ),
+    m: (
+      size: m,
+      lh: m,
+      ls: none,
+      weight: semibold,
+    ),
+    s: (
+      size: s,
+      lh: s,
+      ls: none,
+      weight: semibold,
+    ),
+    xs: (
+      size: xs,
+      lh: xs,
+      ls: none,
+      weight: semibold,
+    ),
+    2xs: (
+      size: 2xs,
+      lh: 2xs,
+      ls: none,
+      weight: semibold,
+    ),
+    3xs: (
+      size: 3xs,
+      lh: 2xs,
+      ls: none,
+      weight: semibold,
+    ),
+  ),
+  text-regular: (
+    xl: (
+      size: 2xl,
+      lh: 2xl,
+      ls: none,
+      weight: regular,
+    ),
+    l: (
+      size: l,
+      lh: l,
+      ls: none,
+      weight: regular,
+    ),
+    m: (
+      size: m,
+      lh: m,
+      ls: none,
+      weight: regular,
+    ),
+    s: (
+      size: s,
+      lh: s,
+      ls: none,
+      weight: regular,
+    ),
+    xs: (
+      size: xs,
+      lh: xs,
+      ls: none,
+      weight: regular,
+    ),
+    2xs: (
+      size: 2xs,
+      lh: 2xs,
+      ls: none,
+      weight: regular,
+    ),
+    3xs: (
+      size: 3xs,
+      lh: 2xs,
+      ls: none,
+      weight: regular,
+    ),
+  ),
+);
+
+@mixin generate-typography-classes($map: $typography-desktop) {
+  @each $group, $sizes in $map {
+    @each $size, $values in $sizes {
+      .font-#{$group}-#{$size} {
+        font-size: global.get-specific-value(size, map-get($values, size));
+        line-height: global.get-specific-value(
+          line-height,
+          map-get($values, lh)
+        );
+        letter-spacing: global.get-specific-value(
+          letter-spacing,
+          map-get($values, ls)
+        );
+        font-weight: global.get-specific-value(
+          font-weight,
+          map-get($values, weight)
+        );
+
+        &:not([class*="cl-"]) {
+          color: var(--color-content-secondary);
+        }
+      }
+    }
+  }
+}
+
+@mixin get-typography-style($group, $size, $color: null) {
+  $values: map-get(map-get($typography-desktop, $group), $size);
+
+  font-size: global.get-specific-value(size, map-get($values, size));
+  line-height: global.get-specific-value(line-height, map-get($values, lh));
+  letter-spacing: global.get-specific-value(
+    letter-spacing,
+    map-get($values, ls)
+  );
+  font-weight: global.get-specific-value(font-weight, map-get($values, weight));
+
+  @if ($color == default) {
+    color: var(--color-content-secondary);
+  } @else if($color != null) {
+    color: $color;
+  }
+}

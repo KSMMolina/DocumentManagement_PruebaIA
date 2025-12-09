@@ -1,0 +1,47 @@
+@use "./variables";
+@use "sass:math";
+@use "sass:list";
+
+// Clase para las filas del grid
+.row {
+  display: flex; // Habilita el layout flexbox
+  flex-wrap: wrap; // Permite que los elementos hijos se envuelvan en una nueva fila
+  // margin-right: -#{math.div(variables.$gutter-width, 2)}; // Ajusta los gutters a la derecha
+  // margin-left: -#{math.div(variables.$gutter-width, 2)}; // Ajusta los gutters a la izquierda
+  gap: math.div(variables.$gutter-width, 2);
+}
+
+.col {
+  padding-right: math.div(variables.$gutter-width, 2); // Espaciado a la derecha
+  padding-left: math.div(variables.$gutter-width, 2); // Espaciado a la izquierda
+}
+
+$breakpoint-list: map-keys(
+  variables.$breakpoints
+); // Lista de los nombres de los breakpoints
+
+// Generar columnas por rango de breakpoints
+@for $i from 1 through length($breakpoint-list) {
+  $current: list.nth($breakpoint-list, $i); // Breakpoint actual
+  $min-width: map-get(
+    variables.$breakpoints,
+    $current
+  ); // Ancho mínimo del breakpoint actual
+
+  // Generar clases de columnas
+  @for $col from 1 through variables.$total-columns {
+    .col-#{$current}-#{$col} {
+      @media (width >= #{$min-width}) {
+        flex: 0 0 calc(100% / #{variables.$total-columns} * #{$col} - math.div(variables.$gutter-width, 2));
+        max-width: calc(100% / #{variables.$total-columns} * #{$col} - math.div(variables.$gutter-width, 2));
+        min-width: calc(100% / #{variables.$total-columns} * #{$col} - math.div(variables.$gutter-width, 2));
+      }
+    }
+  }
+}
+
+.col-auto {
+  flex: 1; // Todas las columnas ocupan espacio igual por defecto
+  padding-right: math.div(variables.$gutter-width, 2); // Espaciado a la derecha
+  padding-left: math.div(variables.$gutter-width, 2); // Espaciado a la izquierda
+}
