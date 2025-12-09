@@ -1,0 +1,387 @@
+@use "./functions";
+@use "sass:string";
+@use "sass:list";
+ 
+// Paleta de todos los colores
+$theme-colors: (
+  brand: (
+    100: #d6ecf7,
+    200: #add8ef,
+    300: #83c5e8,
+    400: #5ab1e0,
+    500: #319ed8,
+    600: #277ead,
+    700: #1d5f82,
+    800: #143f56,
+    900: #0a202b,
+  ),
+  accent: (
+    100: #fff2cc,
+    200: #ffe599,
+    300: #ffd866,
+    400: #ffcb33,
+    500: #ffbe00,
+    600: #cc9800,
+    700: #997200,
+    800: #664c00,
+    900: #332600,
+  ),
+  basic: (
+    black: #000000,
+    black50: #00000080,
+    white: #ffffff,
+    white50: #ffffff80,
+  ),
+  secondary: (
+    100: #e5edf3,
+    200: #c7d3de,
+    300: #a9b8c9,
+    400: #6e889e,
+    500: #1b3748,
+    600: #162c3a,
+    700: #121d2a,
+    800: #0d131c,
+    900: #080a0e,
+  ),
+  neutral: (
+    25: #f7f7f7,
+    50: #f2f2f2,
+    100: #e5e5e5,
+    150: #d9d9d9,
+    200: #cccccc,
+    250: #bfbfbf,
+    300: #b2b2b2,
+    350: #a6a6a6,
+    400: #999999,
+    450: #8c8c8c,
+    500: #808080,
+    550: #737373,
+    600: #666666,
+    650: #595959,
+    700: #4d4d4d,
+    750: #404040,
+    800: #333333,
+    850: #262626,
+    900: #1a1a1a,
+    950: #0d0d0d,
+  ),
+  blue: (
+    100: #d2e0f6,
+    200: #a6c1ed,
+    300: #79a3e3,
+    400: #4d84da,
+    500: #2065d1,
+    600: #1a51a7,
+    700: #133d7d,
+    800: #0d2854,
+    900: #06142a,
+  ),
+  purple: (
+    100: #e8daef,
+    200: #d2b4de,
+    300: #bb8fce,
+    400: #a569bd,
+    500: #8e44ad,
+    600: #72368a,
+    700: #552968,
+    800: #391b45,
+    900: #1c0e23,
+  ),
+  violet: (
+    100: #e2defa,
+    200: #c4bef5,
+    300: #a79df1,
+    400: #897dec,
+    500: #6c5ce7,
+    600: #564ab9,
+    700: #41378b,
+    800: #2b255c,
+    900: #16122e,
+  ),
+  red: (
+    100: #fad7d7,
+    200: #f5b0ae,
+    300: #f68b86,
+    400: #e4815d,
+    500: #e53935,
+    600: #d72e2a,
+    700: #892220,
+    800: #5c1715,
+    900: #2e080b,
+  ),
+  pink: (
+    100: #fbd2e0,
+    200: #f6a5c1,
+    300: #f278a1,
+    400: #ed4b82,
+    500: #e91e63,
+    600: #ba184f,
+    700: #8c123b,
+    800: #5d0c28,
+    900: #2f0614,
+  ),
+  orange: (
+    100: #fae5d3,
+    200: #f5cba7,
+    300: #f0b27a,
+    400: #eb984e,
+    500: #e67e22,
+    600: #b8651b,
+    700: #8a4c14,
+    800: #5c320e,
+    900: #2e1907,
+  ),
+  yellow: (
+    100: #fdf0cc,
+    200: #fce199,
+    300: #fad366,
+    400: #f9c433,
+    500: #f7b500,
+    600: #c69100,
+    700: #946d00,
+    800: #634800,
+    900: #312400,
+  ),
+  green: (
+    100: #d5e5d6,
+    200: #abcbad,
+    300: #82b184,
+    400: #58975b,
+    500: #2e7d32,
+    600: #256428,
+    700: #1c4b1e,
+    800: #123214,
+    900: #09190a,
+  ),
+  teal: (
+    100: #cce7e5,
+    200: #99d0ca,
+    300: #6e8b80,
+    400: #33a195,
+    500: #00897b,
+    600: #006e62,
+    700: #00524a,
+    800: #003731,
+    900: #001b19,
+  ),
+  cyan: (
+    100: #ccf2f6,
+    200: #99e4ee,
+    300: #66d7e5,
+    400: #33c9dd,
+    500: #00bcd4,
+    600: #0096aa,
+    700: #00717f,
+    800: #004b55,
+    900: #00262a,
+  ),
+);
+ 
+$colors-light: (
+  content: (
+    (secondary, secondary, 500),
+    (secondary-high, secondary, 600),
+    (secondary-mid, secondary, 400),
+    (secondary-low, secondary, 300),
+    (secondary-inverse, basic, white),
+    (secondary-mid-inverse, secondary, 200),
+    (secondary-low-inverse, secondary, 100),
+    (disabled, secondary, 200),
+    (brand, brand, 500),
+    (brand-high, brand, 600),
+    (brand-mid, brand, 400),
+    (brand-low, brand, 300),
+    (accent, accent, 500),
+    (accent-high, accent, 600),
+    (accent-low, accent, 300),
+    (link, blue, 500),
+    (link-hover, blue, 400),
+    (link-pressed, blue, 600),
+    (info, blue, 500),
+    (info-bold, blue, 700),
+    (warning, yellow, 500),
+    (warning-bold, yellow, 700),
+    (error, red, 500),
+    (error-bold, red, 700),
+    (success, green, 500),
+    (success-bold, green, 700),
+  ),
+ 
+  background: (
+    (primary, neutral, 50),
+    (hover, neutral, 100),
+    (pressed, neutral, 200),
+    (selected, secondary, 200),
+    (disabled, neutral, 400),
+    (secondary, secondary, 500),
+    (secondary-high, secondary, 300),
+    (secondary-mid, secondary, 200),
+    (secondary-low, secondary, 100),
+    (brand, brand, 500),
+    (brand-hover, brand, 600),
+    (brand-pressed, brand, 700),
+    (brand-high, brand, 300),
+    (brand-mid, brand, 200),
+    (brand-low, brand, 100),
+    (accent, accent, 500),
+    (accent-hover, accent, 400),
+    (accent-pressed, accent, 600),
+    (accent-high, accent, 300),
+    (accent-mid, accent, 200),
+    (accent-low, accent, 100),
+    (info, blue, 100),
+    (info-subtle, blue, 200),
+    (warning, yellow, 100),
+    (warning-subtle, yellow, 200),
+    (error, red, 100),
+    (error-subtle, red, 200),
+    (success, green, 100),
+    (success-subtle, green, 200),
+  ),
+ 
+  border: (
+    (primary, brand, 500),
+    (primary-high, brand, 600),
+    (primary-low, brand, 300),
+    (secondary, secondary, 500),
+    (secondary-high, secondary, 600),
+    (secondary-low, secondary, 300),
+    (accent, accent, 500),
+    (accent-high, accent, 600),
+    (accent-low, accent, 300),
+    (tertiary, neutral, 200),
+    (inverse, neutral, 800),
+    (disabled, neutral, 400),
+    (brand, brand, 500),
+    (focus, blue, 500),
+    (info, blue, 300),
+    (warning, yellow, 500),
+    (error, red, 500),
+    (success, green, 500),
+  ),
+ 
+  // elevation: (
+  //   l0: #ffffff,
+  //   l1: #ffffff,
+  //   l2: #ffffff,
+  //   l4: #ffffff,
+  //   l5: #ffffff,
+  //   l6: #ffffff,
+  // ),
+  // overlay: (
+  //   50: rgba(0, 0, 0, 0.5),
+  //   50-inverse: rgba(255, 255, 255, 0.9),
+  // ),,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+) !default;
+
+$directions: (top, right, bottom, left);
+
+@mixin generate-theme() {
+  @each $group, $colors in $theme-colors {
+    @each $level, $value in $colors {
+      --color-#{$group}-#{$level}: #{$value};
+
+      .bg-#{$group}-#{$level} {
+        background-color: var(--color-#{$group}-#{$level});
+      }
+
+      .cl-#{$group}-#{$level} {
+        color: var(--color-#{$group}-#{$level});
+      }
+
+      .bc-#{$group}-#{$level} {
+        border-color: var(--color-#{$group}-#{$level});
+      }
+
+      .svg-#{$group}-#{$level} {
+        & path {
+          fill: var(--color-#{$group}-#{$level});
+          color: var(--color-#{$group}-#{$level});
+        }
+      }
+    }
+  }
+}
+
+@mixin generate-theme-tokens() {
+  @each $category, $items in $colors-light {
+    @each $item in $items {
+      $alias: list.nth($item, 1);
+      $group: list.nth($item, 2);
+      $shade: list.nth($item, 3);
+ 
+      // Verificación de grupo
+      @if map-has-key($theme-colors, $group) {
+        $color-group: map-get($theme-colors, $group);
+ 
+        // Verificación de shade dentro del grupo
+        @if map-has-key($color-group, $shade) {
+          $color: map-get($color-group, $shade);
+          --color-#{$category}-#{$alias}: #{$color};
+        } @else {
+          @warn "❗ Shade '#{$shade}' no existe en '#{$group}'";
+        }
+      } @else {
+        @warn "❗ Grupo '#{$group}' no existe en \$theme-colors";
+      }
+    }
+  }
+}
+ 
+@mixin generate-theme-utility-classes() {
+  @each $category, $items in $colors-light {
+    @each $item in $items {
+      $alias: list.nth($item, 1);
+      $class-name: "#{$category}-#{$alias}";
+      $var-name: "--color-#{$category}-#{$alias}";
+ 
+      .bg-#{$class-name} {
+        background-color: var(#{$var-name});
+      }
+ 
+      .cl-#{$class-name} {
+        color: var(#{$var-name});
+      }
+ 
+      .bc-#{$class-name} {
+        border-color: var(#{$var-name});
+      }
+ 
+      @each $direction in $directions {
+        .bc-#{$direction}-#{$class-name} {
+          border-#{$direction}-color: var(#{$var-name});
+          &-important {
+            border-#{$direction}-color: var(#{$var-name}) !important;
+          }
+        }
+      }
+ 
+      .svg-#{$class-name} {
+        & path {
+          fill: var(#{$var-name});
+          color: var(#{$var-name});
+        }
+      }
+    }
+  }
+}
+ 
+@function get-specific-color-from-tokens($category, $alias, $theme: "light") {
+  $category-list: map-get($colors-light, $category);
+ 
+  @each $item in $category-list {
+    @if length($item) >= 3 and list.nth($item, 1) == $alias {
+      $group: list.nth($item, 2);
+      $shade: list.nth($item, 3);
+      @return map-get(map-get($theme-colors, $group), $shade);
+    }
+  }
+ 
+  // Si no se encuentra
+  @warn "⚠️ No se encontró el alias '#{$alias}' en la categoría '#{$category}'.";
+  @return null;
+}
+ 
+@function get-specific-color-from-theme($group, $shade) {
+  @return map-get(map-get($theme-colors, $group), $shade);
+}

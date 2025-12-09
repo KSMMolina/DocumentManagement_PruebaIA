@@ -1,0 +1,95 @@
+@use "src/app/domonow-shared-components-web/styles/core/typography";
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/mixins";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+.select-option {
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border-radius: global.get-specific-value(border-radius, s);
+  column-gap: global.get-specific-value(space, s);
+  padding: global.get-specific-value(space, s)
+    global.get-specific-value(space, m);
+  align-items: center;
+  display: flex;
+
+  @include typography.get-typography-style(text-regular, m);
+
+  &[disabled="true"] {
+    &:not(.select-option-selected) {
+      color: var(--color-content-disabled);
+      & svg path {
+        fill: var(--color-content-disabled);
+      }
+    }
+
+    &.select-option-selected {
+      color: var(--color-content-secondary-low-inverse);
+      & svg path {
+        fill: var(--color-content-secondary-low-inverse);
+      }
+    }
+  }
+
+  &:not([disabled="true"]):not(.select-option-success):not(
+      .select-option-error
+    ) {
+    color: var(--color-content-secondary);
+    @include mixins.colorSVG();
+  }
+
+  &:not([noSelectors="true"]) {
+    cursor: pointer;
+    &:not(.select-option-selected):not(:active):not([disabled="true"]) {
+      &:hover,
+      &:focus-within {
+        @include global.get-elevation();
+      }
+
+      &:not(.select-option-success):not(.select-option-error) {
+        &:hover,
+        &:focus-within {
+          background-color: var(--color-background-secondary-low);
+        }
+      }
+
+      &.select-option-success {
+        color: var(--color-content-success);
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus-within {
+          background-color: var(--color-background-success);
+        }
+      }
+
+      &.select-option-error {
+        color: var(--color-content-error);
+        @include mixins.colorSVG();
+
+        &:hover,
+        &:focus-within {
+          background-color: var(--color-background-error);
+        }
+      }
+    }
+
+    &.select-option-selected,
+    &:active {
+      &:not(.select-option-success):not(.select-option-error) {
+        background-color: var(--color-background-secondary-mid);
+      }
+
+      &.select-option-success {
+        background-color: var(--color-background-success-subtle);
+        color: var(--color-content-success);
+        @include mixins.colorSVG();
+      }
+
+      &.select-option-error {
+        background-color: var(--color-background-error-subtle);
+        color: var(--color-content-error);
+        @include mixins.colorSVG();
+      }
+    }
+  }
+}

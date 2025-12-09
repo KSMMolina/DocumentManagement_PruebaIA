@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { IGeneric } from "@core/architecture/interface/generic.interface";
+import { IGeneric } from "@shared/Core/architecture/interface/generic.interface";
 import { IFolderManagement } from "./interface";
 
 export abstract class FolderManagementGateway {

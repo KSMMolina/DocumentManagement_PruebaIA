@@ -1,12 +1,16 @@
 import { Injectable } from "@angular/core";
-import { environment } from "@core/config/environment";
+import { environment } from "Core/Config/Enviroment";
 
 @Injectable({
     providedIn: "root",
 })
 export class UrlService {
+  // private get baseUrl(): string {
+  //   return `${environment.urlApi}/document-management/api/DocumentManagementFile/`;
+  // }
+  
   private get baseUrl(): string {
-    return `${environment.urlApi}/api/DocumentManagementFile/`;
+    return `https://localhost:7180/api/DocumentManagementFile/`;
   }
 
   public get upload(): string {

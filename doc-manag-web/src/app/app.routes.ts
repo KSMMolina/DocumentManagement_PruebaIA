@@ -1,16 +1,14 @@
-import { Routes } from "@angular/router";
-
-export const routes: Routes = [
+import { AppComponent } from './app.component';
+import { Routes } from '@angular/router';
+import { DOCUMENT_MANAGEMENT_ROUTES } from './features/document-management/presentation/routes';
+export const appRoutes: Routes = [
   {
-    path: "documents",
-    loadChildren: () =>
-      import("@features/documents/presentation/documents.routes").then(
-        (m) => m.documentsRoutes
-      ),
+    path: '',
+    component: AppComponent,
+    children: [
+      // Panel raíz (dashboard de documento)
+      ...DOCUMENT_MANAGEMENT_ROUTES,
+    ],
   },
-  {
-    path: "",
-    pathMatch: "full",
-    redirectTo: "documents",
-  },
+  // podrías agregar aquí otras features en el futuro
 ];

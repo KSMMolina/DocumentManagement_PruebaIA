@@ -1,9 +1,8 @@
-import { inject, Injectable } from "@angular/core";
+import { inject } from "@angular/core";
 import { DocumentManagementFileGateway } from "./gateway";
 import { IDocumentManagement } from "./interface";
-import { IGeneric } from "@core/architecture/interface/generic.interface";
+import { IGeneric } from "@shared/Core/architecture/interface/generic.interface";
 
-@Injectable()
 export class DocumentManagementFileUseCase {
   private gateway: DocumentManagementFileGateway = inject(DocumentManagementFileGateway);
 

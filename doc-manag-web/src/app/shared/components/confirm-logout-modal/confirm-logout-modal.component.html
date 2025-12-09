@@ -1,0 +1,11 @@
+<app-alert
+  (eventAlert)="executeEventAlert($event)"
+  hideSecondaryButton
+  status="warning"
+  inModal
+>
+  <ng-container title> Cerrar sesión </ng-container>
+  <ng-container description> ¿Estás seguro de cerrar sesión? </ng-container>
+  <ng-container primaryButton> Cerrar sesión </ng-container>
+  <ng-container tertiaryButton> Cancelar </ng-container>
+</app-alert>

@@ -1,0 +1,272 @@
+@use "./functions";
+
+// Mapa de propiedades donde cada propiedad CSS se asocia a un alias y una lista de valores posibles.
+$properties-map: (
+  visibility: (
+    values: (
+      visible,
+      hidden,
+      collapse,
+    ),
+  ),
+  position: (
+    values: (
+      static,
+      relative,
+      absolute,
+      fixed,
+      sticky,
+    ),
+  ),
+  border-style: (
+    values: (
+      solid,
+      double,
+      dotted,
+      dashed,
+      none,
+    ),
+    alias: bs,
+  ),
+  border-bottom-style: (
+    values: (
+      solid,
+      double,
+      dotted,
+      dashed,
+      none,
+    ),
+  ),
+  border-left-style: (
+    values: (
+      solid,
+      double,
+      dotted,
+      dashed,
+      none,
+    ),
+  ),
+  display: (
+    values: (
+      flex,
+      block,
+      grid,
+      none,
+    ),
+  ),
+  flex-wrap: (
+    values: (
+      wrap,
+      nowrap,
+    ),
+  ),
+  justify-content: (
+    values: (
+      space-between,
+      space-around,
+      flex-start,
+      flex-end,
+      center,
+    ),
+  ),
+  align-items: (
+    values: (
+      space-between,
+      space-around,
+      flex-start,
+      flex-end,
+      center,
+    ),
+  ),
+  flex-direction: (
+    values: (
+      column-reverse,
+      row-reverse,
+      column,
+      row,
+    ),
+  ),
+  text-align: (
+    values: (
+      left,
+      center,
+      right,
+      justify,
+      end,
+      start,
+    ),
+  ),
+  text-overflow: (
+    values: (
+      ellipsis,
+    ),
+  ),
+  white-space: (
+    values: (
+      nowrap,
+      break-spaces,
+      pre-wrap,
+      pre-line,
+    ),
+  ),
+  height: (
+    values: (
+      100%,
+      75%,
+      50%,
+      25%,
+      100vh,
+      fit-content,
+    ),
+  ),
+  max-height: (
+    values: (
+      100%,
+      fit-content,
+    ),
+  ),
+    min-height: (
+    values: (
+      0,
+      100%,
+      fit-content,
+      auto,
+    ),
+  ),
+  width: (
+    values: (
+      100%,
+      75%,
+      50%,
+      25%,
+      100vh,
+      fit-content,
+    ),
+  ),
+  max-width: (
+    values: (
+      100%,
+      fit-content,
+    ),
+  ),
+  overflow: (
+    values: (
+      auto,
+      hidden,
+    ),
+  ),
+  overflow-x: (
+    values: (
+      auto,
+      hidden,
+    ),
+  ),
+  overflow-y: (
+    values: (
+      auto,
+      hidden,
+    ),
+  ),
+  border-radius: (
+    values: (
+      100%,
+    ),
+  ),
+  word-break: (
+    values: (
+      break-all,
+      break-word
+    ),
+  ),
+  cursor: (
+    values: (
+      pointer,
+    ),
+  ),
+  text-decoration: (
+    values: (
+      underline,
+      overline,
+    ),
+  ),
+  float: (
+    values: (
+      left,
+      right,
+    ),
+  ),
+  margin-inline: (
+    values: (
+      0,
+      auto,
+    ),
+  ),
+  margin-block: (
+    values: (
+      0,
+      auto,
+    ),
+  ),
+  line-height: (
+    values: (
+      0,
+      normal
+    ),
+  ),
+  text-transform: (
+    values: (
+      uppercase,
+      lowercase,
+      capitalize,
+    ),
+  ),
+  background:(
+    values: (
+      transparent,
+    ),
+  ),
+);
+
+// Mixin para generar una clase específica con el nombre de clase, propiedad CSS y valor proporcionados.
+// Parámetros:
+// - $class-prefix: El nombre de la clase CSS que se va a generar.
+// - $property: La propiedad CSS que se va a aplicar en la clase.
+// - $value: El valor de la propiedad CSS que se va a aplicar.
+@mixin generate-specific-class($class-prefix, $property, $value) {
+  $normalized-value: functions.normalize-class-name(
+    $value
+  ); // Limpia y convierte el valor
+  .#{$class-prefix}-#{$normalized-value} {
+    // Aplica la propiedad CSS ($property) con el valor ($value) en la clase generada.
+    #{$property}: $value;
+
+    &-important {
+      #{$property}: $value !important;
+    }
+  }
+}
+
+// Mixin para iterar sobre el mapa de propiedades y generar clases CSS para cada combinación de propiedad y valor.
+// No recibe parámetros directamente, pero utiliza el mapa de propiedades ($properties-map) definido globalmente.
+@mixin generate-properties-classes() {
+  // Itera sobre cada par ($properties-map) en el mapa de propiedades.
+  @each $property, $data in $properties-map {
+    // Obtiene el alias ($alias) asociado a la propiedad actual ($property).
+    $alias: map-get($data, alias);
+    // Obtiene la lista de valores ($values) asociados a la propiedad actual.
+    $values: map-get($data, values);
+
+    // Determina el prefijo para el nombre de la clase (alias o propiedad)
+    $class-prefix: if($alias, $alias, $property);
+
+    // Itera sobre cada valor ($value) en la lista de valores.
+    @each $value in $values {
+      // Llama al mixin generate-specific-class con el alias y el valor actual para generar la clase correspondiente.
+      // Parámetros:
+      // - $class-prefix: El nombre de la clase CSS a generar.
+      // - $property: La propiedad CSS que se va a aplicar.
+      // - $value: El valor de la propiedad CSS que se va a aplicar.
+      @include generate-specific-class($class-prefix, $property, $value);
+    }
+  }
+}
