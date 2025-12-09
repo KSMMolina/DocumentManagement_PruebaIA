@@ -1,0 +1,49 @@
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+@mixin alertStyle($alias, $border-color, $background-color-image) {
+  &-#{$alias} {
+    border-color: var(--color-#{$border-color});
+
+    & .alert-body-image {
+      background-color: var(--color-#{$background-color-image});
+    }
+  }
+}
+
+.alert {
+  border-radius: global.get-specific-value(border-radius, xl);
+  border-width: global.get-specific-value(border-width, xs);
+  padding: global.get-specific-value(space, m);
+  background-color: var(--color-neutral-50);
+  flex-direction: column;
+  border-style: solid;
+  display: flex;
+
+  @include global.get-elevation(l2);
+
+  &-modal {
+    max-height: calc(100vh - 2rem);
+  }
+
+  &-body {
+    overflow-y: auto;
+    height: 100%;
+
+    &-image {
+      margin-bottom: functions.convertToRem(16px);
+      border-radius: functions.convertToRem(20px);
+      padding: functions.convertToRem(9px);
+      height: functions.convertToRem(80px);
+      width: functions.convertToRem(80px);
+
+      @include global.get-elevation(l2);
+    }
+  }
+
+  @include alertStyle(success, border-success, background-success-subtle);
+  @include alertStyle(warning, border-warning, background-warning-subtle);
+  @include alertStyle(error, border-error, background-error-subtle);
+  @include alertStyle(info, border-info, background-info-subtle);
+  @include alertStyle(alert, border-secondary, background-secondary-mid);
+}

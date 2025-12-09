@@ -1,0 +1,53 @@
+@if(!hide()){
+  <div
+  class="alert-toast bc-{{ iconAndColor().color }}"
+  @slideEnterAndLeaveRight
+  [ngClass]="classes()"
+>
+  <section class="display-flex column-gap-xs">
+    <app-icon
+      color="svg-{{ iconAndColor().color }}"
+      icon="{{ iconAndColor().icon }}_round"
+      size="3xl"
+    ></app-icon>
+    <article class="display-flex flex-direction-column row-gap-xs">
+      <p class="font-text-semibold-l cl-{{ iconAndColor().color }}">
+        <ng-content select="[title]"></ng-content>
+      </p>
+      <p class="font-text-regular-s cl-{{ iconAndColor().color }}">
+        <ng-content select="[description]"></ng-content>
+      </p>
+      <div
+        class="display-flex align-items-center justify-content-space-between"
+      >
+        @if(!hidePrimaryAction()){
+        <a
+          class="font-text-semibold-s text-decoration-underline cursor-pointer cl-{{
+            iconAndColor().color
+          }}"
+          (click)="eventAction.emit('primary')"
+        >
+          <ng-content select="[actionText]"></ng-content>
+        </a>
+        } @if(!hideSecondaryAction()){
+        <a
+          class="font-text-regular-s text-decoration-underline cursor-pointer cl-{{
+            iconAndColor().color
+          }}"
+          (click)="eventAction.emit('secondary')"
+        >
+          <ng-content select="[secondaryActionText]"></ng-content>
+        </a>
+        }
+      </div>
+    </article>
+  </section>
+
+  <app-icon
+    color="svg-{{ iconAndColor().color }}"
+    (click)="hide.set(true)"
+    icon="close_round"
+    size="xl"
+  ></app-icon>
+</div>
+}

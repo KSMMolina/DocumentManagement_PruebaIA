@@ -1,0 +1,8 @@
+<div
+  [@.disabled]="!enableAnimation()"
+  class="card-item-list"
+  [ngClass]="classes()"
+  @slideEnterRight
+>
+  <ng-content></ng-content>
+</div>

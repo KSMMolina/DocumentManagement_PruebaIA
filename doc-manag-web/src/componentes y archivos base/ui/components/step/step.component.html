@@ -1,0 +1,50 @@
+<div
+  class="step step-{{ orientation() }} step-{{ orientation() }}-{{ size() }}"
+>
+  <div class="step-header">
+    @for(step of steps() || stepItems; track step; let i = $index){
+
+    <ng-template
+      [ngTemplateOutlet]="stepItem"
+      [ngTemplateOutletContext]="{
+        step: step,
+        index: i
+      }"
+    ></ng-template>
+    }
+  </div>
+  @if(stepItems){
+  <div class="step-body">
+    @for(step of stepItems; track step; let i = $index){ @if(!init() || (init()
+    && i === this.selectedIndex())){
+
+    <div
+      [ngClass]="{
+        'step-body-item-active': selectedIndex() === i
+      }"
+      [ngStyle]="{ transform: getTransformByIndex(i) }"
+      class="step-body-item"
+      [@.disabled]="i > 0"
+      @slideEnterTop
+    >
+      <ng-template [ngTemplateOutlet]="step.templateRef()"></ng-template>
+    </div>
+    } }
+  </div>
+  }
+</div>
+
+<ng-template let-step="step" let-index="index" #stepItem>
+  <app-step-element
+    [isSelected]="selectedIndex() === index"
+    [disabledElement]="step?.disabledElement"
+    [description]="step?.description"
+    (stepClick)="selectStep(index)"
+    [isFinished]="step?.isFinished"
+    [type]="type() || step?.type"
+    [size]="size() || step?.size"
+    [label]="step?.label"
+    [icon]="step?.icon"
+    [index]="index"
+  ></app-step-element>
+</ng-template>
