@@ -1,0 +1,67 @@
+<div class="scan-qr-modal">
+  <!-- Botón para cerrar -->
+  <app-button
+    classes="button-secondary-inverse button-circle button-circle-s"
+    class="scan-qr-modal-action-close"
+    (eventClick)="closeScanner()"
+  >
+    <app-icon icon="close_outlined" size="2xl" ></app-icon>
+  </app-button>
+
+  <!-- Estado de carga -->
+  @if(isLoading()) {
+  <div class="center-all flex-direction-column">
+    <app-loading color="svg-content-secondary-inverse" size="3xl"></app-loading>
+    <p class="font-text-semibold-m cl-content-secondary-inverse margin-top-m">
+      Cargando cámara...
+    </p>
+  </div>
+  }
+
+  <!-- Error -->
+  @if(errorMessage() && !isLoading()) {
+  <div class="center-all flex-direction-column row-gap-m padding-inline-l">
+    <app-image image="alerts.warning" height="60" width="60"></app-image>
+    <p
+      class="font-text-semibold-m cl-content-secondary-inverse text-align-center"
+    >
+      {{ errorMessage() }}
+    </p>
+    <app-button
+      classes="button-warning button-s"
+      (eventClick)="retryCamera()"
+    >
+      Volver a intentar
+    </app-button>
+  </div>
+  }
+
+  <!-- Scanner (solo mostrar si no hay errores y no está cargando) -->
+  @if(!errorMessage() && !isLoading() && hasPermission()) {
+  <div class="scan-qr-modal-body">
+    <!-- Componente ZXing Scanner -->
+    <zxing-scanner
+      (permissionResponse)="onPermissionResponse($event)"
+      [enable]="hasPermission() && hasDevices()"
+      (camerasFound)="onCamerasFound($event)"
+      (camerasNotFound)="onCamerasNotFound()"
+      (scanSuccess)="onQRScanned($event)"
+      (scanError)="onScanError($event)"
+      [formats]="allowedFormats()"
+      [device]="currentDevice()"
+      [autostart]="true"
+      [tryHarder]="true"
+      #scanner
+      class="zxing-scanner"
+    >
+    </zxing-scanner>
+
+    <!-- Instrucciones -->
+    <p
+      class="font-text-semibold-m cl-content-secondary-inverse white-space-nowrap scan-qr-modal-instructions"
+    >
+      Apunta la cámara hacia el código QR
+    </p>
+  </div>
+  }
+</div>

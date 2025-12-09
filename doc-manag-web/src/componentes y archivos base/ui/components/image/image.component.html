@@ -1,0 +1,54 @@
+<!-- <div
+  [ngStyle]="{
+    height: !isLoad() ? height() + 'px' : '100%',
+    width: !isLoad() ? width() + 'px' : '100%'
+  }"
+  class="image-wrapper"
+>
+  <img
+    [ngStyle]="{ opacity: isLoad() ? 1 : 0 }"
+    (load)="isLoad.set(true)"
+    (error)="hasError.set(true)"
+    [decoding]="decoding()"
+    [height]="height()"
+    [class]="classes()"
+    [src]="enableCache() ? cachedImageUrl() : imageUrl()"
+    [width]="width()"
+    loading="lazy"
+    [alt]="alt()"
+  />
+
+  @if(!isLoad()){
+  <div class="content-skeleton" [ngClass]="classes()">
+    <app-item-skeleton [height]="height()" [width]="width()" />
+  </div>
+  }
+</div> -->
+
+<div
+  [ngStyle]="{
+    height: !isLoad() ? height() + 'px' : '100%',
+    width: !isLoad() ? width() + 'px' : '100%'
+  }"
+  class="image-wrapper"
+>
+  <!-- [priority]="priority()" -->
+  <img
+    [ngStyle]="{ opacity: isLoad() ? 1 : 0 }"
+    (load)="isLoad.set(true)"
+    [decoding]="decoding()"
+    [height]="height()"
+    [class]="classes()"
+    [src]="imageUrl()"
+    [width]="width()"
+    loading="lazy"
+    [alt]="alt()"
+  />
+
+  @if(!isLoad()){
+  <div class="content-skeleton" [ngClass]="classes()">
+    <app-item-skeleton [height]="height()" [width]="width()" />
+  </div>
+  }
+</div>
+

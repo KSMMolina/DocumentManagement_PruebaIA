@@ -1,0 +1,35 @@
+<div
+  [ngStyle]="{
+    'grid-template-rows': '1fr' + (hideIndicators() ? '' : ' auto')
+  }"
+  class="slide slide-{{ type() }}"
+>
+  <div class="slide-content">
+    @for(slide of slideItems; track slide; let i = $index){
+    <div
+      [ngStyle]="{
+        width:
+          slideItems.length === 1 || type() === 'fullscreen'
+            ? '100%'
+            : 'calc(100% - 4rem)',
+        overflow: noOverflow() ? 'hidden' : 'hidden auto',
+        transform: getTransformByIndex(i)
+      }"
+      class="slide-item"
+    >
+      <ng-template [ngTemplateOutlet]="slide.templateRef()"></ng-template>
+    </div>
+    }
+  </div>
+  @if(!hideIndicators()){
+  <div class="slide-indicators">
+    @for(slide of slideItems; track slide; let i = $index){
+    <button
+      [ngClass]="{ 'item-indicator-selected': i === selectedSlide() }"
+      (click)="goToSpecificSlide(i)"
+      class="item-indicator"
+    ></button>
+    }
+  </div>
+  }
+</div>

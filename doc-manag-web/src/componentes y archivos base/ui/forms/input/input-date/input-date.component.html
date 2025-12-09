@@ -1,0 +1,68 @@
+<div
+  class="form-field form-field-{{
+    required() && invalid && touched ? 'error' : status()
+  }} form-field-{{ size() }}"
+  [ngClass]="{
+    'form-field-filled': valid && touched && !!value(),
+    'form-field-combo': inCombo()
+  }"
+  [appDisabledElement]="disabledElement()"
+  [attr.readonly]="readonly()"
+  [attr.required]="required()"
+  [opacityElement]="0.5"
+>
+  <div class="display-flex align-items-center justify-content-space-between">
+    <ng-content select="[label]"></ng-content>
+    <ng-content select="[labelOptional]"></ng-content>
+  </div>
+
+  <div class="form-field-content" (click)="input.focus()">
+    <ng-content select="[prefix]"></ng-content>
+    <input
+      [tabindex]="readonly() || disabledElement() ? -1 : 0"
+      [readonly]="readonly() ? true : null"
+      [disabled]="disabledElement()"
+      [placeholder]="placeholder()"
+      (input)="onInput($event)"
+      [title]="placeholder()"
+      appSanitizerToString
+      [ngModel]="value()"
+      (blur)="onBlur()"
+      [min]="minDate()"
+      [max]="maxDate()"
+      [name]="id()"
+      type="date"
+      [id]="id()"
+      #input
+    />
+
+    @if(!disabledElement() && !readonly()){
+    <!-- Clear action icon -->
+    @if(!!value()){
+    <app-icon
+      classes="cursor-pointer"
+      (click)="clearInput()"
+      icon="CLOSE_FILLED"
+      @fadeInOut
+      size="xl"
+    ></app-icon>
+    } }
+    <ng-content select="[suffix]"></ng-content>
+    <!-- Status icon -->
+    @if(iconStatus() || (required() && invalid && touched)){
+    <app-icon
+      [icon]="iconStatus() || 'ERROR_OUTLINE_OUTLINED'"
+      @fadeInOut
+      size="xl"
+    ></app-icon>
+    }
+  </div>
+
+  @if(invalid && touched){ @if(defaultLabelError()){
+  <label [for]="id()" secondary="true">{{ "REQUIRED_FIELD" | translate }}</label>
+  }@else {
+  <ng-content select="[labelError]"></ng-content>
+  } }
+
+  <ng-content select="[labelSecondary]"></ng-content>
+</div>

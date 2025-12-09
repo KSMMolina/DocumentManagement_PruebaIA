@@ -1,0 +1,90 @@
+@use "./variables";
+// Importamos 'sass:math' para manejar divisiones matemáticas de forma moderna
+@use "sass:math";
+@use "sass:list";
+
+// Mixin para aplicar estilos en un breakpoint mínimo
+// Ejemplo de uso: @include respond-to('md') { ... }
+@mixin respond-to($breakpoint) {
+  @media (min-width: map-get(variables.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+// Mixin para generar clases que oculten elementos según un rango de tamaños de pantalla
+@mixin generate-hidden-classes() {
+  $breakpoint-list: map-keys(
+    variables.$breakpoints
+  ); // Lista de los nombres de los breakpoints
+
+  @for $i from 1 through length($breakpoint-list) {
+    $current: list.nth($breakpoint-list, $i); // Breakpoint actual
+    $min-width: map-get(
+      variables.$breakpoints,
+      $current
+    ); // Ancho mínimo del breakpoint actual
+
+    @if $i < length($breakpoint-list) {
+      $next: list.nth($breakpoint-list, $i + 1); // Siguiente breakpoint
+      $max-width: map-get(
+        variables.$breakpoints,
+        $next
+      ); // Ancho máximo del siguiente breakpoint
+
+      // Genera una clase .hidden-{breakpoint} que oculta elementos en el rango definido
+      .hidden-#{$current} {
+        @media (width >= #{$min-width}) and (width < #{$max-width}) {
+          display: none !important;
+        }
+      }
+    } @else {
+      // Para el último breakpoint, solo aplica min-width
+      .hidden-#{$current} {
+        @media (width >= #{$min-width}) {
+          display: none !important;
+        }
+      }
+    }
+  }
+}
+
+@function get-measure($size: 1, $measure: px) {
+  $msv: map-get(variables.$measures, $measure);
+  @return if($msv, $msv * $size, $size * 1px);
+}
+
+@mixin generate-styles(
+  // Nombre base del selector (e.g., padding, margin)
+  $selector,
+  // Propiedad CSS (e.g., padding, margin)
+  $property: $selector,
+  // Unidad de medida (e.g., px, rem)
+  $measure: px,
+  // Valor inicial del rango
+  $values: ()
+) {
+  @each $value in $values {
+    .#{$selector}-#{$value}-#{$measure} {
+      #{$property}: get-measure($value, $measure);
+      &-important {
+        #{$property}: get-measure($value, $measure) !important;
+      }
+    }
+  }
+}
+
+/** Asignar color al svg */
+@mixin colorSVG() {
+  & svg,
+  & svg path {
+    color: currentColor;
+    fill: currentColor;
+  }
+}
+
+/** Asignar propiedades */
+@mixin applyProperties($properties) {
+  @each $property, $value in $properties {
+    #{$property}: $value;
+  }
+}

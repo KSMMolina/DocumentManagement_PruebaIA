@@ -1,0 +1,162 @@
+PROMPT 1 = Actúa como un arquitecto front-end senior experto en Angular 19, Clean Architecture aplicada al front y proyectos escalables por features.
+
+Estoy trabajando en un proyecto Angular 19 llamado doc-manag-web, creado con:
+
+"ng new doc-manag-web --standalone --routing --style=scss"
+
+Quiero que ME PROPONGAS Y GENERES LA ESTRUCTURA DE CARPETAS Y ARCHIVOS BASE siguiendo una arquitectura limpia adaptada a front y organizada por features.
+
+No quiero que implementes lógica de negocio todavía; solo estructura, archivos vacíos o con skeleton mínimo.
+
+Objetivo de la arquitectura
+
+Mantener separación clara entre:
+
+core (servicios globales/transversales).
+
+shared (UI reutilizable, utilidades, directivas, pipes, modelos genéricos).
+
+features (módulos verticales por contexto de negocio).
+
+Dentro de cada feature, aplicar una estructura inspirada en Clean Architecture:
+
+domain (modelos, value objects, reglas puras).
+
+application (use-cases, state, facades, hooks).
+
+infrastructure (http, mappers, adapters).
+
+presentation (pages, components, rutas Angular).
+
+Stack y convenciones
+
+Angular 19 con componentes standalone.
+
+TypeScript estricto.
+
+SCSS como preprocesador.
+
+Arquitectura por feature (vertical slice).
+
+No usar Nx, solo Angular CLI estándar.
+
+No generar lógica compleja, solo archivos básicos/skeleton.
+
+LO QUE NECESITO QUE HAGAS
+
+Definir y crear la estructura de carpetas principal bajo src/:
+
+src/
+  main.ts
+  styles.scss
+
+  styles/
+    core/
+    components/
+
+  app/
+    app.config.ts        // si aplica
+    app.routes.ts
+    app.component.ts     // shell/layout raíz
+
+    core/
+      config/
+      layout/
+      services/
+      interceptors/
+      guards/
+      router/
+      state/
+
+    shared/
+      ui/
+        components/
+          button/
+          card/
+          input-text/
+          table/
+          modal/
+          // deja preparada la estructura para más componentes
+      directives/
+      pipes/
+      utils/
+      models/
+      styles/
+
+    features/
+      document-management/
+        domain/
+          models/
+          value-objects/
+          services/
+        application/
+          use-cases/
+          state/
+          facades/
+          hooks/
+        infrastructure/
+          http/
+          mappers/
+          adapters/
+        presentation/
+          pages/
+            folders-page/
+            // aquí irá la pantalla principal de la HU de gestión documental
+          components/
+            folder-list/
+            folder-breadcrumb/
+            upload-files-modal/
+          routes.ts
+
+          
+		  
+Crear archivos base vacíos o con contenido mínimo en los puntos clave. Por ejemplo:
+
+src/app/app.routes.ts: definir un Routes básico que lazy-loadee la feature document-management usando Angular standalone.
+
+src/app/features/document-management/presentation/routes.ts: exportar la constante DOCUMENT_MANAGEMENT_ROUTES con una ruta base apuntando a FoldersPageComponent (aunque de momento sea un skeleton).
+
+src/app/features/document-management/presentation/pages/folders-page/folders-page.component.ts: crear un componente standalone mínimo (sin lógica) con un template placeholder tipo <p>Folders Page works</p>.
+
+src/app/core/services/ y src/app/shared/ui/components/*: crear archivos .ts vacíos o con skeleton de clase/componente standalone sin lógica de negocio.
+
+Preparar los estilos globales, sin implementarlos, dejando listo el wiring:
+
+En src/styles/ crea:
+
+core/_variables.scss
+
+core/_typography.scss
+
+core/_global.scss
+
+components/_button.scss
+
+components/_table.scss
+
+En src/styles.scss agrega los @use (o @import si es necesario) a esos parciales, dejando comentarios de TODO para luego integrar los estilos reales.
+
+Respetar las dependencias conceptuales:
+
+core y shared no deben depender de ninguna carpeta de features.
+
+Dentro de features/document-management:
+
+presentation puede depender de application y shared/ui.
+
+application puede depender de domain e infrastructure.
+
+domain NO debe depender de Angular ni de infrastructure.
+
+infrastructure puede depender de Angular (HttpClient, etc.) pero no de presentation.
+
+No romper el proyecto actual:
+
+No borres archivos críticos generados por Angular, solo adáptalos si es necesario.
+
+Si necesitas modificar main.ts o app.component.ts para conectar las rutas, hazlo con cuidado y explícitamente.
+
+
+
+PROMPT 2 =
+

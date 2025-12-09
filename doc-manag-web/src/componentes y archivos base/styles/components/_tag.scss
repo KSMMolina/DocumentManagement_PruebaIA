@@ -1,0 +1,312 @@
+@use "src/app/domonow-shared-components-web/styles/core/typography";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+@use "src/app/domonow-shared-components-web/styles/core/mixins";
+
+@mixin tagStyle($default, $hoverFocus: (), $active: ()) {
+  @include mixins.applyProperties($default);
+
+  @include mixins.colorSVG();
+
+  &:hover,
+  &:focus {
+    @include mixins.applyProperties($hoverFocus);
+    @include mixins.colorSVG();
+  }
+
+  &:active {
+    @include mixins.applyProperties($active);
+    @include mixins.colorSVG();
+  }
+}
+
+@mixin tagSize($alias, $font-size, $column-gap, $height, $padding-inline) {
+  &-#{$alias} {
+    padding-inline: global.get-specific-value(space, $padding-inline);
+    column-gap: global.get-specific-value(space, $column-gap);
+    min-width: global.get-specific-value(size, $height);
+    height: global.get-specific-value(size, $height);
+
+    @include typography.get-typography-style(text-regular, $font-size);
+  }
+}
+
+.tag {
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease, text-decoration 0.3s ease;
+  border-radius: global.get-specific-value(border-radius, pill);
+  border-width: global.get-specific-value(border-width, xs);
+  padding-block: global.get-specific-value(space, 2xs);
+  justify-content: center;
+  border-style: solid;
+  align-items: center;
+  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+
+  @include global.get-elevation();
+
+  &[disabled="true"] {
+    background-color: var(--color-background-disabled);
+    border-color: var(--color-border-disabled);
+    color: var(--color-content-disabled);
+    pointer-events: none;
+  }
+
+  &[loading="true"] {
+    pointer-events: none;
+  }
+
+  &:active {
+    border-width: global.get-specific-value(border-width, m);
+  }
+
+  /** Tamaños */
+
+  @include tagSize(xl, xl, xl, 7xl, xl);
+  @include tagSize(l, l, l, 6xl, l);
+  @include tagSize(m, m, m, 5xl, m);
+  @include tagSize(s, m, s, 3xl, s);
+  @include tagSize(xs, s, s, 2xl, s);
+  @include tagSize(2xs, xs, xs, l, xs);
+
+  /** Variantes de colores **/
+  &:not([disabled="true"]) {
+    &.tag {
+      &-default {
+        @include tagStyle(
+          (
+            background-color: var(--color-secondary-100),
+            color: var(--color-content-secondary),
+            border-color: var(--color-secondary-100),
+          ),
+          (
+            background-color: var(--color-secondary-200),
+            border-color: var(--color-border-secondary-high),
+          ),
+          (
+            background-color: var(--color-secondary-100),
+            border-color: var(--color-border-secondary-high),
+          )
+        );
+
+        &-inverse {
+          @include tagStyle(
+            (
+              background-color: var(--color-content-secondary),
+              color: var(--color-content-secondary-inverse),
+              border-color: var(--color-content-secondary),
+            ),
+            (
+              background-color: var(--color-content-secondary),
+              border-color: var(--color-content-secondary),
+            ),
+            (
+              background-color: var(--color-content-secondary-high),
+              border-color: var(--color-border-secondary-low),
+            )
+          );
+        }
+
+        &-outline {
+          @include tagStyle(
+            (
+              background-color: transparent,
+              color: var(--color-content-secondary),
+              border-color: var(--color-content-secondary),
+            ),
+            (),
+            (
+              border-color: var(--color-content-secondary-high),
+              color: var(--color-content-secondary-high),
+            )
+          );
+        }
+      }
+
+      &-accent {
+        @include tagStyle(
+          (
+            background-color: var(--color-background-accent),
+            color: var(--color-accent-800),
+            border-color: var(--color-background-accent),
+          ),
+          (
+            background-color: var(--color-background-accent-hover),
+            color: var(--color-accent-900),
+            border-color: var(--color-background-accent-high),
+          ),
+          (
+            background-color: var(--color-background-accent-hover),
+            color: var(--color-accent-900),
+            border-color: var(--color-accent-700),
+          )
+        );
+      }
+
+      &-success {
+        @include tagStyle(
+          (
+            background-color: var(--color-background-success),
+            color: var(--color-content-success),
+            border-color: var(--color-background-success),
+          ),
+          (
+            background-color: var(--color-background-success),
+            border-color: var(--color-border-success),
+          ),
+          (
+            background-color: var(--color-background-success-subtle),
+            border-color: var(--color-border-success),
+          )
+        );
+
+        &-outline {
+          @include tagStyle(
+            (
+              background-color: transparent,
+              color: var(--color-content-success),
+              border-color: var(--color-content-success),
+            ),
+            (),
+            (
+              color: var(--color-content-success-bold),
+            )
+          );
+        }
+      }
+
+      &-error {
+        @include tagStyle(
+          (
+            background-color: var(--color-background-error),
+            color: var(--color-content-error),
+            border-color: var(--color-background-error),
+          ),
+          (
+            background-color: var(--color-background-error),
+            border-color: var(--color-border-error),
+          ),
+          (
+            background-color: var(--color-background-error-subtle),
+            border-color: var(--color-border-error),
+          )
+        );
+
+        &-outline {
+          @include tagStyle(
+            (
+              background-color: transparent,
+              color: var(--color-content-error),
+              border-color: var(--color-content-error),
+            ),
+            (),
+            (
+              color: var(--color-content-error-bold),
+              border-color: var(--color-content-error-bold),
+            )
+          );
+        }
+      }
+
+      &-warning {
+        @include tagStyle(
+          (
+            background-color: var(--color-background-warning),
+            color: var(--color-content-warning-bold),
+            border-color: var(--color-background-warning),
+          ),
+          (
+            background-color: var(--color-background-warning),
+            border-color: var(--color-border-warning),
+          ),
+          (
+            background-color: var(--color-background-warning-subtle),
+            border-color: var(--color-border-warning),
+          )
+        );
+
+        &-outline {
+          @include tagStyle(
+            (
+              background-color: transparent,
+              color: var(--color-content-warning),
+              border-color: var(--color-content-warning),
+            ),
+            (),
+            (
+              color: var(--color-content-warning-bold),
+              border-color: var(--color-content-warning-bold),
+            )
+          );
+        }
+      }
+
+      &-info {
+        @include tagStyle(
+          (
+            background-color: var(--color-background-info),
+            color: var(--color-content-info),
+            border-color: var(--color-background-info),
+          ),
+          (
+            background-color: var(--color-background-info),
+            border-color: var(--color-border-info),
+          ),
+          (
+            background-color: var(--color-background-info-subtle),
+            border-color: var(--color-border-info),
+          )
+        );
+
+        &-outline {
+          @include tagStyle(
+            (
+              background-color: transparent,
+              color: var(--color-content-info),
+              border-color: var(--color-content-info),
+            ),
+            (),
+            (
+              color: var(--color-content-info-bold),
+              border-color: var(--color-content-info-bold),
+            )
+          );
+        }
+      }
+
+      &-new {
+        @include tagStyle(
+          (
+            background-color: var(--color-purple-100),
+            color: var(--color-purple-500),
+            border-color: var(--color-purple-100),
+          ),
+          (
+            border-color: var(--color-purple-500),
+          ),
+          (
+            background-color: var(--color-purple-200),
+            border-color: var(--color-purple-600),
+          )
+        );
+      }
+
+      &-teal {
+        @include tagStyle(
+          (
+            background-color: var(--color-teal-100),
+            color: var(--color-teal-500),
+            border-color: var(--color-teal-100),
+          ),
+          (
+            border-color: var(--color-teal-500),
+          ),
+          (
+            background-color: var(--color-teal-200),
+            border-color: var(--color-teal-600),
+          )
+        );
+      }
+    }
+  }
+}

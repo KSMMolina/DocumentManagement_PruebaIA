@@ -1,0 +1,42 @@
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+.item-skeleton {
+  border-radius: global.get-specific-value(border-radius, s);
+  background-color: var(--color-neutral-200);
+  pointer-events: none;
+  position: relative;
+  height: 1.25rem;
+
+  &-loading {
+    &::after {
+      animation-timing-function: cubic-bezier(0.17, 0.67, 0.83, 0.67);
+      animation-iteration-count: infinite;
+      background: linear-gradient(
+        to right,
+        #f4f4f4 0%,
+        #d8d8d8 50%,
+        #f4f4f4 100%
+      );
+      animation-name: skeletonShimmer;
+      animation-fill-mode: forwards;
+      background-size: 200% 100%;
+      animation-duration: 2s;
+      border-radius: inherit;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      content: "";
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

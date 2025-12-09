@@ -1,0 +1,44 @@
+@use "src/app/domonow-shared-components-web/styles/core/typography";
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+@use "sass:list";
+
+@mixin avatarSize($alias, $size, $font-size: (heading, l)) {
+  &-#{$alias} {
+    height: functions.convertToRem($size);
+    width: functions.convertToRem($size);
+
+    @include typography.get-typography-style(
+      list.nth($font-size, 1),
+      list.nth($font-size, 2)
+    );
+
+    font-weight: global.get-specific-value(font-weight, regular);
+  }
+}
+
+.avatar {
+  border-radius: global.get-specific-value(border-radius, circle);
+  color: var(--color-content-secondary-inverse);
+  padding: global.get-specific-value(space, xs);
+  background-color: #ff8e8e;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+
+  @include global.get-elevation(l2);
+
+  @include avatarSize(4xl, 96px);
+  @include avatarSize(3xl, 80px);
+  @include avatarSize(2xl, 72px);
+  @include avatarSize(xl, 64px);
+  @include avatarSize(l, 48px, (heading, s));
+  @include avatarSize(m, 40px, (heading, xs));
+  @include avatarSize(s, 32px, (heading, 2xs));
+  @include avatarSize(xs, 24px, (text-regular, s));
+  @include avatarSize(2xs, 16px, (text-regular, 2xs));
+
+  &-rol {
+    margin-top: -0.5rem;
+  }
+}

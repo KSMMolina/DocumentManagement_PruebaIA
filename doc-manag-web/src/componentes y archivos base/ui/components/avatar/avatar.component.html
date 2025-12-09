@@ -1,0 +1,10 @@
+<div class="display-flex flex-direction-column align-items-center">
+  <div class="avatar avatar-{{ size() }}">
+    {{ textSplit() | uppercase }}
+  </div>
+  @if(rol()){
+  <app-tag class="avatar-rol" classes="tag-default-inverse tag-2xs"
+    >{{ rol() }}
+  </app-tag>
+  }
+</div>

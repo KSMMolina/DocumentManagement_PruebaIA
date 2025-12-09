@@ -1,0 +1,17 @@
+<div
+  [appDisabledElement]="disabledElement()"
+  [attr.readonly]="readonly()"
+  [ngClass]="classes()"
+  class="checkbox"
+>
+  <button
+    [attr.tabindex]="readonly() ? -1 : 0"
+    [attr.checked]="value()"
+    class="content-checkbox"
+    (click)="changeValue()"
+  ></button>
+  @if(label()){
+  <label class="font-text-regular-m" [for]="id()">{{ label() | translate }}</label>
+  }
+  <ng-content select="[label]"></ng-content>
+</div> 
