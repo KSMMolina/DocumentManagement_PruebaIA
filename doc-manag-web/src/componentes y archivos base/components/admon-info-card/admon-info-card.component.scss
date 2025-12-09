@@ -1,0 +1,19 @@
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+.admon-info-card {
+  background-color: var(--color-background-secondary);
+  padding: global.get-specific-value(space, l);
+
+  &:not(.admon-info-card-mobile) {
+    border-radius: global.get-specific-value(border-radius, l);
+
+    @include global.get-elevation();
+  }
+
+  & .separator {
+    background-color: var(--color-content-secondary-inverse);
+    height: functions.convertToRem(1px);
+    width: 100%;
+  }
+}

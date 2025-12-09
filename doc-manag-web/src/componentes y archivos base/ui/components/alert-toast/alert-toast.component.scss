@@ -1,0 +1,28 @@
+@use "src/app/domonow-shared-components-web/styles/core/functions";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+@mixin alertToastStyle($alias, $border-color) {
+  &-#{$alias} {
+    border-color: var(--color-#{$border-color});
+  }
+}
+
+.alert-toast {
+  border-radius: global.get-specific-value(border-radius, l);
+  border-width: global.get-specific-value(border-width, xs);
+  background-color: var(--color-background-primary);
+  column-gap: global.get-specific-value(space, xs);
+  padding: global.get-specific-value(space, m)
+    global.get-specific-value(space, l);
+  justify-content: space-between;
+  border-style: solid;
+  display: flex;
+
+  @include global.get-elevation(l2);
+
+  @include alertToastStyle(success, border-success);
+  @include alertToastStyle(warning, border-warning);
+  @include alertToastStyle(error, border-error);
+  @include alertToastStyle(info, border-info);
+  @include alertToastStyle(default, border-secondary);
+}

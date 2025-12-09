@@ -1,0 +1,43 @@
+<section @fadeIn>
+  <div class="center-all">
+    <app-image
+      classes="margin-bottom-xl"
+      [image]="image()"
+      alt="no-records"
+      height="100"
+      width="150"
+    ></app-image>
+  </div>
+  <h3 class="font-heading-xs text-align-center margin-bottom-s">
+    {{
+      "EMPTY_STATE.TITLE"
+        | translate
+          : {
+              entity: entity()
+            }
+    }}
+  </h3>
+
+  <p class="font-text-regular-xs text-align-center margin-bottom-xl">
+    {{ "EMPTY_STATE.DESCRIPTION" | translate }}
+  </p>
+
+  <div class="display-flex flex-direction-column align-items-center">
+    @if(!hidePrimaryButton()){
+    <app-button
+      classes="button-secondary button-xs margin-bottom-m"
+      (eventClick)="eventClick.emit('primary')"
+    >
+      <ng-content select="[primaryButton]"></ng-content>
+    </app-button>
+    } @if(!hideSecondaryButton()){
+    <app-button
+      (eventClick)="eventClick.emit('secondary')"
+      classes="button-secondary-ghost button-xs"
+    >
+      <!-- <app-icon icon="refresh_outlined" size="3xl"></app-icon> -->
+      {{ "REFRESH" | translate }}
+    </app-button>
+    }
+  </div>
+</section>

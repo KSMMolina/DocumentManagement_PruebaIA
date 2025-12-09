@@ -1,0 +1,35 @@
+<section @fadeIn>
+  <div class="center-all">
+    <app-image
+      classes="margin-bottom-xl"
+      [image]="image()"
+      alt="no-records"
+      height="100"
+      width="150"
+    ></app-image>
+  </div>
+  @if(!hideTitle()){
+  <h3 class="font-heading-xs text-align-center margin-bottom-s">
+    {{
+      "ERROR_STATE.TITLE"
+        | translate
+          : {
+              entity: entity()
+            }
+    }}
+  </h3>
+  } @if(!hideDescription()){
+  <p class="font-text-regular-xs text-align-center margin-bottom-xl">
+    {{ "ERROR_STATE.DESCRIPTION" | translate }}
+  </p>
+  } @if(!hidePrimaryButton()){
+  <div class="display-flex flex-direction-column align-items-center">
+    <app-button
+      classes="button-secondary button-xs margin-bottom-m"
+      (eventClick)="eventClick.emit('primary')"
+    >
+      <app-icon icon="refresh_outlined" size="3xl"></app-icon>
+    </app-button>
+  </div>
+  }
+</section>

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/DocumentManagementPruebaIA.Domain/DocumentManagementPruebaIA.Domain.csproj" />
+  <Project Path="src/DocumentManagementPruebaIA.Application/DocumentManagementPruebaIA.Application.csproj" />
+  <Project Path="src/DocumentManagementPruebaIA.Infrastructure/DocumentManagementPruebaIA.Infrastructure.csproj" />
+  <Project Path="src/DocumentManagementPruebaIA.Api/DocumentManagementPruebaIA.Api.csproj" />
+</Solution>

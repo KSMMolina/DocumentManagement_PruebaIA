@@ -1,0 +1,140 @@
+@use "src/app/domonow-shared-components-web/styles/core/typography";
+@use "src/app/domonow-shared-components-web/styles/core/global";
+
+.navigation-tab {
+  grid-template-rows: auto 1fr;
+  max-height: 100%;
+  display: grid;
+  width: 100%;
+
+  &-header {
+    background-color: var(--color-content-secondary-inverse);
+    overflow: hidden;
+    display: flex;
+    
+    &-list {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      overflow: auto hidden;
+      scrollbar-width: none;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      display: flex;
+
+      &-item {
+        white-space: nowrap;
+        cursor: pointer;
+        border: none;
+      }
+    }
+  }
+
+  &-segmented {
+    & .navigation-tab-header-list {
+      border-radius: global.get-specific-value(border-radius, pill);
+      background-color: var(--color-background-primary);
+      column-gap: global.get-specific-value(space, s);
+
+      &-item {
+        border-radius: global.get-specific-value(border-radius, pill);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: global.get-specific-value(space, m)
+          global.get-specific-value(space, xl);
+
+        @include typography.get-typography-style(heading, 2xs);
+
+        &:not(.navigation-tab-header-list-item-selected) {
+          color: var(--color-content-secondary-mid);
+          background-color: transparent;
+        }
+
+        &-selected {
+          background-color: var(--color-content-secondary);
+          color: var(--color-content-secondary-inverse);
+          @include global.get-elevation();
+        }
+      }
+    }
+  }
+
+  &-topv1 {
+    & .navigation-tab-header-list {
+      column-gap: global.get-specific-value(space, l);
+
+      &-item {
+        padding-block: global.get-specific-value(space, l);
+        background-color: transparent;
+        transition: color 0.3s ease;
+
+        &:not(.navigation-tab-header-list-item-selected) {
+          @include typography.get-typography-style(text-regular, m);
+          color: var(--color-content-secondary-low);
+        }
+
+        &-selected {
+          border-bottom: global.get-specific-value(border-width, l) solid
+            var(--color-content-secondary);
+          @include typography.get-typography-style(heading, 2xs, default);
+        }
+      }
+    }
+  }
+
+  &-topv2 {
+    & .navigation-tab-header-list {
+      column-gap: global.get-specific-value(space, l);
+
+      &-item {
+        border-radius: global.get-specific-value(border-radius, m);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: global.get-specific-value(space, s)
+          global.get-specific-value(space, m);
+        background-color: transparent;
+
+        &:not(.navigation-tab-header-list-item-selected) {
+          @include typography.get-typography-style(
+            text-regular,
+            m,
+            var(--color-content-secondary-low)
+          );
+        }
+
+        &-selected {
+          @include typography.get-typography-style(heading, 2xs, default);
+          background-color: var(--color-background-secondary-low);
+        }
+      }
+    }
+  }
+
+  &-body {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+
+    &-item {
+      transition: transform 0.5s ease;
+      overflow: hidden;
+
+      &:not(.navigation-tab-body-item-active) {
+        position: absolute;
+        display: block;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+      }
+
+      &-active {
+        flex-direction: column;
+        flex-basis: 100%;
+        display: flex;
+        flex-grow: 1;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+      }
+    }
+  }
+}

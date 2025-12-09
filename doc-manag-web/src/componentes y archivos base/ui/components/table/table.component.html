@@ -1,0 +1,184 @@
+@let pageNumber = queryParams()?.['PageNumber'];
+<!--  -->
+@let pageSize = queryParams()?.['PageSize'];
+
+<table class="table" [ngClass]="classes()">
+  <colgroup>
+    @for(header of header(); track header.text){
+    <col [style.width]="header.width" />
+    }
+  </colgroup>
+
+  <thead>
+    <tr>
+      @for(header of header(); track header.text){
+      <th>
+        <div class="center-all column-gap-s">
+          <p class="font-text-semibold-s">
+            {{ header.text | translate : null : "capitalize" }}
+          </p>
+          @if(header.isSortable){
+          <button
+            [attr.aria-label]="
+              'Ordenar ' + (header.isAscending ? 'descendente' : 'ascendente')
+            "
+            [ngClass]="{
+              'sortable-action-hidden': queryParams()?.['OrderBy'] !== header.columnName,
+              'rotate-icon-activate': header.isAscending
+            }"
+            class="rotate-icon sortable-action"
+            (click)="changeOrderBy(header)"
+            type="button"
+          >
+            <app-icon icon="arrow_downward_outlined" size="l"></app-icon>
+          </button>
+          }
+        </div>
+      </th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @if(loading()){ @for(item of createArrayByNumber(items()?.length || 4);
+    track item){
+    <tr>
+      @for (header of header(); track $index) {
+      <td>
+        <app-item-skeleton height="20"></app-item-skeleton>
+      </td>
+      }
+    </tr>
+    } }
+    <!-- Error -->
+    @else if(error()){
+    <tr>
+      <td [attr.colspan]="header().length">
+        <app-error-state (eventClick)="executeEndpoint.emit()" />
+      </td>
+    </tr>
+    }
+    <!-- Empty state -->
+    @else if(totalItems() === 0){
+    <tr>
+      <td [attr.colspan]="header().length">
+        <app-empty-state
+          (eventClick)="executeEndpoint.emit()"
+          hidePrimaryButton
+        />
+      </td>
+    </tr>
+    }
+    <!-- List -->
+    @else { @for(item of items(); track item?.id; let i = $index){
+    <ng-container
+      *ngTemplateOutlet="
+        templateRef();
+        context: {
+          $implicit: item,
+          index: i
+        }
+      "
+    ></ng-container>
+    } }
+  </tbody>
+  <tfoot>
+    <ng-content select="[footer]"></ng-content>
+    @if(withPagination()){
+    <tr>
+      <td [attr.colspan]="header().length">
+        <div
+          class="display-flex align-items-center justify-content-space-between"
+        >
+          <p class="font-text-regular-s">
+            {{ "SHOWING" | translate }}
+            <b>
+              {{ (pageNumber - 1) * pageSize + 1 }} -
+              {{ pageSize * pageNumber }}
+            </b>
+            {{ "OF" | translate : null : "lower" }}
+            <b>
+              {{ totalItems() }}
+            </b>
+          </p>
+          <div class="display-flex align-items-center column-gap-s">
+            <!-- First -->
+            <ng-container
+              *ngTemplateOutlet="
+                actionPagination;
+                context: {
+                  icon: 'first_page_outlined',
+                  disabled: pageNumber === 1,
+                  action: 'first'
+                }
+              "
+            ></ng-container>
+            <!-- Previous -->
+            <ng-container
+              *ngTemplateOutlet="
+                actionPagination;
+                context: {
+                  icon: 'chevron_left_outlined',
+                  disabled: pageNumber === 1,
+                  action: 'previous'
+                }
+              "
+            ></ng-container>
+            <!-- Page number -->
+            <app-input-number
+              [disabledElement]="totalItems() === 0"
+              placeholder="{{ pageNumber }}"
+              [formControl]="pageControl"
+              [maxValue]="totalPages()"
+              hideClearAction
+              [minValue]="1"
+              size="sm"
+              id="page"
+            ></app-input-number>
+            <!-- Next -->
+            <ng-container
+              *ngTemplateOutlet="
+                actionPagination;
+                context: {
+                  disabled: pageNumber === totalPages(),
+                  icon: 'chevron_right_outlined',
+                  action: 'next'
+                }
+              "
+            ></ng-container>
+            <!-- Last -->
+            <ng-container
+              *ngTemplateOutlet="
+                actionPagination;
+                context: {
+                  disabled: pageNumber === totalPages(),
+                  icon: 'last_page_outlined',
+                  action: 'last'
+                }
+              "
+            ></ng-container>
+          </div>
+          <button class="action-pagination">
+            {{ pageNumber }} / {{ totalPages() }}
+          </button>
+        </div>
+      </td>
+    </tr>
+    }
+  </tfoot>
+</table>
+
+<ng-template
+  let-disabled="disabled"
+  let-action="action"
+  #actionPagination
+  let-icon="icon"
+>
+  <button
+    [appDisabledElement]="totalItems() === 0 || disabled"
+    (click)="changePage(action)"
+    class="action-pagination"
+    [opacityElement]="0.4"
+  >
+    <app-icon [icon]="icon" size="3xl"></app-icon>
+  </button>
+</ng-template>

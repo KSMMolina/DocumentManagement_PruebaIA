@@ -1,0 +1,78 @@
+<div
+  [ngClass]="{ 'height-100': !navigationTabs()?.length }"
+  class="navigation-tab navigation-tab-{{ type() }}"
+>
+  <div
+    [ngClass]="{ 'padding-inline-l padding-block-m': !removePadding() }"
+    class="navigation-tab-header {{ positionClass() }}"
+  >
+    <div
+      [ngClass]="{
+        'padding-inline-m': removePadding() && type() !== 'segmented'
+      }"
+      class="navigation-tab-header-list"
+    >
+      <!-- Lista de items enviada como input -->
+      @for(navigationTab of navigationTabs(); track navigationTab; let i =
+      $index){
+      <ng-template
+        [ngTemplateOutlet]="tabItem"
+        [ngTemplateOutletContext]="{
+          disabledElement: navigationTab.disabledElement,
+          label: navigationTab.label,
+          index: i
+        }"
+      ></ng-template>
+      }
+      <!-- Lista de items enviada como proyección -->
+      @for(navigationTab of navigationTabItems; track navigationTab; let i =
+      $index){
+      <ng-template
+        [ngTemplateOutlet]="tabItem"
+        [ngTemplateOutletContext]="{
+          disabledElement: navigationTab.disabledElement(),
+          label: navigationTab.label(),
+          index: i
+        }"
+      ></ng-template>
+      }
+    </div>
+  </div>
+  @if(navigationTabItems){
+  <div class="navigation-tab-body">
+    @for(navigationTab of navigationTabItems; track navigationTab; let i =
+    $index){ @if(!init() || (init() && i === this.selectedIndex())){
+
+    <div
+      [ngClass]="{
+        'navigation-tab-body-item-active': selectedIndex() === i
+      }"
+      [ngStyle]="{ transform: getTransformByIndex(i) }"
+      class="navigation-tab-body-item"
+    >
+      <ng-template
+        [ngTemplateOutlet]="navigationTab.templateRef()"
+      ></ng-template>
+    </div>
+    } }
+  </div>
+  }
+</div>
+
+<ng-template
+  let-disabledElement="disabledElement"
+  let-label="label"
+  let-index="index"
+  #tabItem
+>
+  <button
+    [ngClass]="{
+      'navigation-tab-header-list-item-selected': selectedIndex() === index
+    }"
+    [appDisabledElement]="disabledElement"
+    class="navigation-tab-header-list-item"
+    (click)="selectTab(index)"
+  >
+    {{ label | translate }}
+  </button>
+</ng-template>

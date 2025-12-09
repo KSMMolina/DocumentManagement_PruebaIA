@@ -1,0 +1,94 @@
+@use "../core/typography";
+@use "../core/animations";
+@use "../core/global";
+@use "../core/theme";
+
+.radio-button {
+  column-gap: global.get-specific-value(space,s);
+  align-items: center;
+  display: flex;
+
+  & label {
+    @include typography.get-typography-style(text-regular, m);
+    color: var(--color-content-secondary);
+  }
+
+  & .content-radio-button {
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+      box-shadow 0.3s ease;
+    border-radius: global.get-specific-value(border-radius, pill);
+    border-width: global.get-specific-value(border-width, xs);
+    height: global.get-specific-value(size, l);
+    width: global.get-specific-value(size, l);
+    border-style: solid;
+    position: relative;
+
+    &::before {
+      border-radius: global.get-specific-value(border-radius, pill);
+      transform: translate(-50%, -50%);
+      position: absolute;
+      height: 0.5rem;
+      width: 0.5rem;
+      display: none;
+      content: "";
+      left: 50%;
+      top: 50%;
+
+      @include animations.fade-in();
+    }
+
+    &[checked="true"] {
+      &::before {
+        display: block;
+      }
+    }
+  }
+
+  &[disabled="true"] {
+    & .content-radio-button {
+      background-color: var(--color-neutral-100);
+      border-color: var(--color-neutral-200);
+
+      &::before {
+        background-color: var(--color-neutral-300);
+      }
+    }
+
+    & label {
+      color: var(--color-neutral-200);
+    }
+  }
+
+  &:not([disabled="true"]):not([readonly="true"]) {
+    & .content-radio-button {
+      border-color: var(--color-content-secondary);
+      background-color: var(--color-basic-white);
+
+      &::before {
+        background-color: var(--color-content-link);
+      }
+
+      &:hover,
+      &:active,
+      &:focus {
+        border-color: var(--color-content-link);
+      }
+
+      &:active,
+      &:focus {
+        box-shadow: 0px 0px 0px 2px #2065d126;
+      }
+    }
+  }
+
+  &[readonly="true"] {
+    & .content-radio-button {
+      border-color: var(--color-content-secondary);
+      background-color: var(--color-basic-white);
+
+      &::before {
+        background-color: var(--color-content-link);
+      }
+    }
+  }
+}
