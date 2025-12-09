@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../DocumentManagementPruebaIA.Application/DocumentManagementPruebaIA.Application.csproj" />
-    <ProjectReference Include="../DocumentManagementPruebaIA.Infrastructure/DocumentManagementPruebaIA.Infrastructure.csproj" />
-  </ItemGroup>
-</Project>
