@@ -1,0 +1,355 @@
+@use "../core/typography";
+@use "../core/global";
+@use "../core/mixins";
+@use "sass:list";
+
+@mixin navigationCardStyle($default, $hoverFocus, $active) {
+  @include mixins.applyProperties($default);
+
+  @include mixins.colorSVG();
+
+  &:hover,
+  &:focus {
+    @include mixins.applyProperties($hoverFocus);
+    @include mixins.colorSVG();
+  }
+
+  &:active {
+    @include mixins.applyProperties($active);
+    @include mixins.colorSVG();
+  }
+}
+
+@mixin navigationCardSize($alias, $font, $padding: l) {
+  &-#{$alias} {
+    padding: global.get-specific-value(space, $padding);
+
+    @include typography.get-typography-style(list.nth($font, 1), list.nth($font, 2));
+  }
+}
+
+.navigation-card {
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease;
+  border-radius: global.get-specific-value(border-radius, l);
+  border-width: global.get-specific-value(border-width, xs);
+  column-gap: global.get-specific-value(space, s);
+  border-style: solid;
+  align-items: center;
+  display: flex;
+  width: 100%;
+
+  @include global.get-elevation(l2);
+
+  &:active {
+    border-width: global.get-specific-value(border-width, m);
+  }
+
+  /** Orientacion */
+  &-vertical {
+    flex-direction: column;
+  }
+
+  &-horizontal {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /** Tamaños */
+  @include navigationCardSize(l, (text-semibold, l));
+  @include navigationCardSize(m, (text-semibold, s));
+  @include navigationCardSize(s, (text-semibold, xs));
+  @include navigationCardSize(xs, (text-regular, xs), s);
+
+  &-main {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-secondary),
+        border-color: var(--color-background-secondary),
+        color: var(--color-content-accent),
+      ),
+      (
+        background-color: var(--color-content-secondary-high),
+        border-color: var(--color-content-secondary-high),
+      ),
+      (
+        background-color: var(--color-content-secondary-high),
+        border-color: var(--color-border-secondary),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-border-secondary),
+          color: var(--color-content-secondary),
+        ),
+        (
+          border-color: var(--color-content-secondary-high),
+        ),
+        (
+          border-color: var(--color-border-secondary-high),
+        )
+      );
+    }
+  }
+
+  &-secondary {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-secondary),
+        border-color: var(--color-background-secondary),
+        color: var(--color-content-secondary-inverse),
+      ),
+      (
+        background-color: var(--color-content-secondary-high),
+        border-color: var(--color-content-secondary-high),
+      ),
+      (
+        background-color: var(--color-content-secondary-high),
+        border-color: var(--color-border-secondary),
+      )
+    );
+
+    &-high {
+      @include navigationCardStyle(
+        (
+          background-color: var(--color-background-secondary-high),
+          border-color: var(--color-background-secondary-high),
+          color: var(--color-content-secondary),
+        ),
+        (
+          background-color: var(--color-background-secondary-mid),
+          border-color: var(--color-background-secondary-mid),
+        ),
+        (
+          background-color: var(--color-background-secondary-mid),
+          border-color: var(--color-border-secondary),
+        )
+      );
+    }
+
+    &-low {
+      @include navigationCardStyle(
+        (
+          background-color: var(--color-background-secondary-low),
+          border-color: var(--color-background-secondary-low),
+          color: var(--color-content-secondary),
+        ),
+        (
+          background-color: var(--color-background-secondary-mid),
+          border-color: var(--color-background-secondary-mid),
+        ),
+        (
+          background-color: var(--color-background-secondary-high),
+          border-color: var(--color-border-secondary),
+        )
+      );
+    }
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-border-secondary-low),
+          color: var(--color-content-secondary-low),
+        ),
+        (
+          color: var(--color-content-secondary-mid),
+        ),
+        (
+          color: var(--color-content-secondary-mid),
+        )
+      );
+    }
+  }
+
+  &-add {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-primary),
+        border-color: var(--color-background-primary),
+        color: var(--color-content-secondary),
+      ),
+      (
+        background-color: var(--color-background-hover),
+        border-color: var(--color-background-hover),
+      ),
+      (
+        background-color: var(--color-background-hover),
+        border-color: var(--color-border-tertiary),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-background-primary),
+          color: var(--color-content-secondary-inverse),
+        ),
+        (
+          border-color: var(--color-background-hover),
+          color: var(--color-content-secondary-low-inverse),
+        ),
+        (
+          border-color: var(--color-border-tertiary),
+          color: var(--color-content-secondary-low-inverse),
+        )
+      );
+    }
+  }
+
+  &-error {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-error),
+        border-color: var(--color-background-error),
+        color: var(--color-content-error),
+      ),
+      (
+        background-color: var(--color-background-error-subtle),
+        border-color: var(--color-background-error-subtle),
+        color: var(--color-content-error-bold),
+      ),
+      (
+        background-color: var(--color-background-error-subtle),
+        border-color: var(--color-border-error),
+        color: var(--color-content-error-bold),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-content-error),
+          color: var(--color-content-error),
+        ),
+        (
+          border-color: var(--color-content-error-bold),
+          color: var(--color-content-error-bold),
+        ),
+        (
+          border-color: var(--color-content-error),
+          color: var(--color-content-error-bold),
+        )
+      );
+    }
+  }
+
+  &-warning {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-warning),
+        border-color: var(--color-background-warning),
+        color: var(--color-content-warning),
+      ),
+      (
+        background-color: var(--color-background-warning-subtle),
+        border-color: var(--color-background-warning-subtle),
+        color: var(--color-content-warning-bold),
+      ),
+      (
+        background-color: var(--color-background-warning-subtle),
+        border-color: var(--color-border-warning),
+        color: var(--color-content-warning-bold),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-content-warning),
+          color: var(--color-content-warning),
+        ),
+        (
+          border-color: var(--color-content-warning-bold),
+          color: var(--color-content-warning-bold),
+        ),
+        (
+          border-color: var(--color-content-warning),
+          color: var(--color-content-warning-bold),
+        )
+      );
+    }
+  }
+
+  &-info {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-info),
+        border-color: var(--color-background-info),
+        color: var(--color-content-info),
+      ),
+      (
+        background-color: var(--color-background-info-subtle),
+        border-color: var(--color-background-info-subtle),
+        color: var(--color-content-info-bold),
+      ),
+      (
+        background-color: var(--color-background-info-subtle),
+        border-color: var(--color-border-info),
+        color: var(--color-content-info-bold),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-content-info),
+          color: var(--color-content-info),
+        ),
+        (
+          border-color: var(--color-content-info-bold),
+          color: var(--color-content-info-bold),
+        ),
+        (
+          border-color: var(--color-content-info),
+          color: var(--color-content-info-bold),
+        )
+      );
+    }
+  }
+
+  &-success {
+    @include navigationCardStyle(
+      (
+        background-color: var(--color-background-success),
+        border-color: var(--color-background-success),
+        color: var(--color-content-success),
+      ),
+      (
+        background-color: var(--color-background-success-subtle),
+        border-color: var(--color-background-success-subtle),
+        color: var(--color-content-success-bold),
+      ),
+      (
+        background-color: var(--color-background-success-subtle),
+        border-color: var(--color-border-success),
+        color: var(--color-content-success-bold),
+      )
+    );
+
+    &-outline {
+      @include navigationCardStyle(
+        (
+          background-color: transparent,
+          border-color: var(--color-content-success),
+          color: var(--color-content-success),
+        ),
+        (
+          border-color: var(--color-content-success-bold),
+          color: var(--color-content-success-bold),
+        ),
+        (
+          border-color: var(--color-content-success),
+          color: var(--color-content-success-bold),
+        )
+      );
+    }
+  }
+}

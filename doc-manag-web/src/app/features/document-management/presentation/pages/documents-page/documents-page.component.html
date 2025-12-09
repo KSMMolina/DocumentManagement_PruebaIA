@@ -1,34 +1,138 @@
-<section class="documents-page">
-  <header class="documents-page__header">
-    <h1 class="documents-page__title">Documentos</h1>
-    <p class="documents-page__subtitle">
-      Vista de gestión de archivos consumiendo la capa de aplicación.
-    </p>
-  </header>
+<div class="documents-page">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs">
+    <button class="breadcrumbs__back" (click)="onBack()" aria-label="Volver">
+      <i class="fa-solid fa-chevron-left"></i>
+      <span>Volver</span>
+    </button>
+  </nav>
 
-  <main class="documents-page__content">
-    @if (loading()) {
-      <p>Cargando documentos...</p>
-    } @else if (error()) {
-      <p class="documents-page__error">{{ error() }}</p>
-    } @else if (documents().length === 0) {
-      <p>No hay documentos para esta carpeta.</p>
-    } @else {
-      <ul class="documents-page__list">
-        @for (doc of documents(); track doc.id) {
-          <li class="documents-page__item">
-            <strong>{{ doc.name }}</strong>
-            <span class="documents-page__meta">
-              · {{ doc.mimeType }} - {{ doc.sizeBytes }} bytes
-            </span>
-          </li>
-        }
-      </ul>
-    }
-  </main>
+  <!-- Controls card: header + search + filters -->
+  <section class="controls-card" aria-label="Controles de documentos">
+    <div class="page-header">
+      <div class="page-header__title">
+        <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+        <h1 [ngStyle]="{'font-size': '1.5rem'}">Documentos</h1>
+      </div>
+    </div>
 
-  <footer class="documents-page__footer">
-    <a routerLink="/" class="documents-page__link">Volver al panel</a>
-    <a routerLink="/folders" class="documents-page__link">Ir a carpetas</a>
-  </footer>
-</section>
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="text" placeholder="Buscar documentos..." aria-label="Buscar documentos" />
+      </div>
+
+      <div class="toolbar__actions">
+        <div [ngStyle]="{'display': 'flex', 'gap': '10px'}">
+          <button class="filter-dropdown" aria-label="Filtro de periodo">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            <span>Este trimestre</span>
+            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </button>
+
+          <button class="filter-badge" aria-label="Cantidad de filtros activos">
+            <i class="fa-solid fa-filter" aria-hidden="true"></i>
+            <span>3</span>
+          </button>
+        </div>  
+          
+
+        <button class="btn-new" aria-label="Crear nuevo documento">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          <span>Nuevo</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- View toggle aligned to the right inside controls card -->
+    
+  </section>
+
+  <div class="controls-card__view">
+    <div class="view-toggle">
+      <button class="view-toggle__btn" [class.view-toggle__btn--active]="viewMode === 'list'" (click)="setListView()" aria-label="Vista de lista">
+        <i class="fa-solid fa-list"></i>
+      </button>
+      <button class="view-toggle__btn" [class.view-toggle__btn--active]="viewMode === 'grid'" (click)="setGridView()" aria-label="Vista de cuadrícula">
+        <i class="fa-solid fa-grip"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Document count and view toggles -->
+  <div class="list-header">
+    <span class="list-header__count">3 Documentos</span>
+    <!-- Toggle moved into controls card; keep count only here -->
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading()" class="display-flex justify-content-center padding-l">
+    <div class="item-skeleton item-skeleton-loading" style="width: 100%; height: 100px;"></div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error()" class="display-flex justify-content-center padding-l">
+    <p class="font-text-regular-m cl-content-error">{{ error() }}</p>
+  </div>
+
+  <!-- Documents list -->
+  <div *ngIf="!loading() && !error()" class="documents-list" [class.documents-list--grid]="viewMode === 'grid'">
+
+    <!-- Iteración sobre documentos reales -->
+    <div 
+      *ngFor="let doc of documents()" 
+      class="doc-card"
+      [class.doc-card--compact]="viewMode === 'grid'"
+      role="article"
+      aria-label="Tarjeta de documento">
+
+      <!-- Icon -->
+      <div class="doc-card__icon" aria-hidden="true">
+        <i class="fa-regular fa-file-lines"></i>
+      </div>
+
+      <!-- Tags -->
+      <div class="doc-card__tags" aria-label="Etiquetas del documento" *ngIf="viewMode === 'list'">
+        <span class="doc-tag doc-tag--review">En revisión</span>
+        <span class="doc-tag doc-tag--board">Junta</span>
+      </div>
+
+      <!-- Body -->
+      <div class="doc-card__body">
+        <h3 class="doc-title">{{ doc.name }}</h3>
+
+        <div class="doc-meta">
+          <span class="doc-meta__item">
+            <i class="fa-regular fa-folder"></i>
+            {{ doc.folderName || 'Actas' }}
+          </span>
+          <span class="doc-meta__item">
+            <i class="fa-regular fa-calendar"></i>
+            {{ formatDate(doc.createdAt) }}
+          </span>
+        </div>
+
+        <div class="doc-footer">
+          <span class="doc-footer__left">
+            {{ getFileExtension(doc.mimeType) }} • {{ formatSize(doc.sizeBytes) }}
+          </span>
+          <span class="doc-footer__right" aria-label="Acciones del documento">
+            <i class="fa-solid fa-download" aria-hidden="true"></i>
+            3
+          </span>
+        </div>
+      </div>
+
+      <!-- Menu -->
+      <button class="doc-card__menu" aria-label="Abrir menú del documento">
+        <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="documents().length === 0" class="display-flex flex-direction-column align-items-center padding-xl row-gap-m">
+      <i class="fa-regular fa-folder-open" style="font-size: 4rem; color: var(--color-content-secondary-low);"></i>
+      <p class="font-text-regular-m cl-content-secondary-low">No hay documentos disponibles</p>
+    </div>
+  </div>
+</div>

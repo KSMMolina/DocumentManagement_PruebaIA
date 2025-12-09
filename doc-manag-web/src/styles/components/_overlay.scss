@@ -1,0 +1,35 @@
+@use "../core/global";
+
+.overlay {
+  &-backdrop {
+    background-color: var(--color-basic-black50);
+    position: absolute;
+    height: 100%;
+    z-index: 100;
+    width: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  &-content {
+    background-color: var(--color-content-secondary-inverse);
+    width: 100%;
+
+    &-mobile {
+      transition: height 0.1s ease-in, top 0.1s ease-in, bottom 0.1s ease-in;
+      border-radius: global.get-specific-value(border-radius, xl)
+        global.get-specific-value(border-radius, xl) 0 0;
+      position: absolute;
+      max-height: 90vh;
+      z-index: 100;
+      bottom: 0;
+      left: 0;
+    }
+
+    &:not(.overlay-content-mobile) {
+      border-radius: global.get-specific-value(border-radius, s);
+
+      @include global.get-elevation(l2);
+    }
+  }
+}
